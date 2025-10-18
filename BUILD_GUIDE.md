@@ -11,6 +11,19 @@ Bu proje **zaten PlatformIO ile derlenebilir** şekilde yapılandırılmıştır
 - Git
 - İnternet bağlantısı (ilk derleme için paketlerin indirilmesi gerekir)
 
+### Kurulum Doğrulaması
+
+Projeyi derlemeden önce kurulumunuzu doğrulamak için:
+
+```bash
+./verify_setup.sh
+```
+
+Bu script:
+- PlatformIO kurulumunu kontrol eder
+- Kullanılabilir derleme ortamlarını listeler
+- Konfigürasyon dosyalarını doğrular
+
 ### Kurulum ve Derleme
 
 #### Yöntem 1: PlatformIO IDE (Önerilen - Başlangıç için en kolay)
@@ -123,6 +136,19 @@ This project is **already configured to compile with PlatformIO**. All necessary
 - Python 3.7+
 - Git
 - Internet connection (required for initial package downloads)
+
+### Setup Verification
+
+Before building the project, verify your setup:
+
+```bash
+./verify_setup.sh
+```
+
+This script will:
+- Check PlatformIO installation
+- List available build environments
+- Verify configuration files
 
 ### Installation and Building
 
