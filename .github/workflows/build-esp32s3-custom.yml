@@ -1,3 +1,7 @@
+# Fast, reliable GitHub Actions workflow for building the PlatformIO environment
+# custom_ESP32s3_16M8M_LittleFS_OPI_PSRAM_ETH on every push and pull request.
+# Uses caching to speed up repeated builds and uploads firmware binaries as artifacts.
+
 name: Build ESP32s3 Custom Environment
 
 on:
@@ -65,29 +69,31 @@ jobs:
         run: |
           echo "builddate=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
       
-      - name: Build firmware
+      - name: Build and archive
+        id: build-and-archive
+        env:
+          CHIP: esp32s3
+          ENV: ${{ env.PLATFORMIO_ENV }}
         run: |
-          platformio run -e ${{ env.PLATFORMIO_ENV }}
+          python tools/ci/build-and-archive.py
       
       - name: List build output
         run: |
-          echo "=== Build output directory structure ==="
-          find .pio/build/${{ env.PLATFORMIO_ENV }} -type f \( -name "*.bin" -o -name "*.elf" \) 2>/dev/null || true
+          echo "=== Archived bin directory ==="
+          find bin -type f 2>/dev/null || echo "No bin directory"
           echo ""
-          echo "=== build_output directory ==="
-          find build_output -type f 2>/dev/null || echo "No build_output directory"
+          echo "=== Build output directory ==="
+          find .pio/build/${{ env.PLATFORMIO_ENV }} -type f \( -name "*.bin" -o -name "*.elf" \) 2>/dev/null | head -10 || true
       
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ env.PLATFORMIO_ENV }}-${{ steps.date.outputs.builddate }}-${{ github.run_id }}
           path: |
+            bin
             .pio/build/${{ env.PLATFORMIO_ENV }}/*.bin
             .pio/build/${{ env.PLATFORMIO_ENV }}/*.bin.gz
             .pio/build/${{ env.PLATFORMIO_ENV }}/*.elf
             .pio/build/${{ env.PLATFORMIO_ENV }}/*.factory.bin
-            build_output/bin/**
-            build_output/debug/**
-            build_output/json/**
           if-no-files-found: warn
           retention-days: 30
