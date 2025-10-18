@@ -83,7 +83,7 @@ jobs:
           find bin -type f 2>/dev/null || echo "No bin directory"
           echo ""
           echo "=== Build output directory ==="
-          find .pio/build/${{ env.PLATFORMIO_ENV }} -type f \( -name "*.bin" -o -name "*.elf" \) 2>/dev/null | head -10 || true
+          find .pio/build/${{ env.PLATFORMIO_ENV }} -type f \( -name "*.bin" -o -name "*.elf" \) 2>/dev/null || true
       
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
