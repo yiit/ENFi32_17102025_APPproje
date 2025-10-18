@@ -1,0 +1,63 @@
+.. include:: ../Plugin/_plugin_substitutions_p02x.repl
+.. _P025_page:
+
+|P025_typename|
+==================================================
+
+|P025_shortinfo|
+
+Plugin details
+--------------
+
+Type: |P025_type|
+
+Name: |P025_name|
+
+Status: |P025_status|
+
+GitHub: |P025_github|_
+
+Maintainer: |P025_maintainer|
+
+Used libraries: |P025_usedlibraries|
+
+.. include:: P025_page.rst
+
+Supported hardware
+------------------
+
+|P025_usedby|
+
+.. Commands available
+.. ^^^^^^^^^^^^^^^^^^
+
+.. .. include:: P025_commands.repl
+
+.. Events
+.. ~~~~~~
+
+.. .. include:: P025_events.repl
+
+Change log
+----------
+
+.. versionchanged:: 2023/03/31
+  ...
+
+  |added|
+  Added option to output in Volt
+
+.. versionchanged:: 2023/09/05
+  ...
+
+  |added|
+  Detect ADS1015 or ADS1115
+
+  |added|
+  Select Sample Rate
+
+  |added|
+  Select Multiple Output Values
+
+
+

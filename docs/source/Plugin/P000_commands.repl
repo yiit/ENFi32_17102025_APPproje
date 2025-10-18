@@ -1,0 +1,1102 @@
+
+**TODO** : Check commands M..Z and check for all commands whether the "class" is still valid.
+
+
+.. csv-table::
+    :header: "Command", "Class", "Purpose / Syntax"
+    :widths: 8, 5, 30
+
+    "
+    AsyncEvent","
+    :blue:`Special`","
+    Schedule an event, it's possible to send a float value along as well.
+
+    This is the same as a regular event, but it will not be executed immediately.
+    Instead it will be added to an event queue.
+    
+    Use this to keep rules execution times as short as possible.
+
+    N.B. New values sent by a task will also be of this type.
+
+    See event syntax below..."
+    "
+    AccessInfo","
+    :red:`Internal`","
+    Show allowed IP range for the web interface.
+
+    ``AccessInfo``
+    
+    Example output: ``Allowed IP range : 192.168.10.0 - 192.168.10.255``"
+    "
+    Background","
+    :red:`Internal`","
+    Process background tasks.
+
+    ``Background``"
+    "
+    Build","
+    :red:`Internal`","
+    Get or set build information.  This will not be stored, so only valid until reboot.
+
+    ``Build``
+
+    ``Build,12345``
+    
+    Example output: ``Build:20104``"
+    "
+    ClearAccessBlock","
+    :red:`Internal`","
+    Clear allowed IP range for the web interface for the current session.
+    See also ``AccessInfo``.
+
+    ``ClearAccessBlock``"
+    "
+    ClearPassword","
+    :red:`Internal`","
+    Clear the password of the unit.
+    See also ``Password``.
+
+    ``ClearPassword,<current password>``"
+    "
+    ClearRTCram","
+    :red:`Internal`","
+    Clear all (cached) data from the RTC memory. 
+    This data is persistent as long as the node is powered and thus survives a reboot or crash.
+
+    ``ClearRTCram``"
+    "
+    ClearSdkWifi","
+    :red:`Internal`","
+    ESP8266 only (added: 2022/11/11)
+    
+    Clear the 12k SDK WiFi partition at the end of the flash memory.
+    This data is used by the ESP8266 Arduino SDK to keep some persistent WiFi settings.
+    
+    When WiFi is performing badly, it might be useful to clear this section. 
+    Especially when switching SDK build revisions, like when switching between regular builds and 'beta' or 'alt.WiFi' builds.
+    
+    Please reboot after clearing this partition.
+    
+    See also ``ClearWifiRFcal`` command.
+
+    ``ClearSdkWifi``"
+    "
+    ClearWifiRFcal","
+    :red:`Internal`","
+    ESP8266 only (added: 2022/11/11)
+    
+    Clear the 4k RFcal partition near the end of the flash memory.
+    This data is used by the ESP8266 Arduino SDK to keep store WiFi RF calibration data.
+    
+    When WiFi is performing badly, it might be useful to clear this section. 
+    Especially when switching SDK build revisions, like when switching between regular builds and 'beta' or 'alt.WiFi' builds.
+    
+    Another reason to clear the RF calibration is when initial RF calibration was done with a different power supply, or when WiFi performs badly after placing the ESP in a different enclosure which may de-tune the antenna.
+    
+    Please reboot after clearing this partition.
+    
+    See also ``ClearSdkWifi`` command.
+
+    ``ClearWifiRFcal``"
+
+    "
+    Config","
+    :red:`Internal`","
+    Remote config of a task. 
+    This allows for actually change the config as stored in the settings for a task.
+
+    The syntax is like ``config,task,<taskname>,<actual config command>``
+
+    Right now only the ``Regulator - Level Control`` plugin (P021) supports this via its ``SetLevel`` command.
+
+    Later other config options might be added, like ``SetInterval`` or other generic options.
+
+    Example for the task named 'VoltageLevel': ``config,task,VoltageLevel,SetLevel,22``"
+    "
+    ControllerDisable","
+    :red:`Internal`","
+    Disable a controller.
+    This will not save the settings, but if the settings get saved anyway the controller will remain disabled at reboot.
+
+    ``ControllerDisable,<controller nr>``"
+    "
+    ControllerEnable","
+    :red:`Internal`","
+    Enable a controller. (Only possible when a protocol is assigned to the controller index)
+    This will not save the settings, but if the settings get saved anyway the controller will remain enabled at reboot.
+
+    ``ControllerEnable,<controller nr>``"
+    "
+    DateTime","
+    :red:`Internal`","
+    Get or set the date and time (optional).
+
+    Usage: ``Datetime[,YYYY-MM-DD[,hh:mm:ss]]``
+
+    Examples:
+    
+    * ``Datetime,2020-02-29,00:23:00``
+    * ``Datetime,2020-02-29`` - set node time '2020-02-29 00:00:00'
+    * ``Datetime`` - get current node time
+    
+    Time source will be set to ``Manual_set`` until the time will be updated via another source. (e.g. GPS or NTP)"
+    "
+    Debug","
+    :red:`Internal`","
+    Change Serial port debug level
+
+    ``Debug,<1-4>``"
+    "
+    Dec","
+    :red:`Internal`","
+    Decrement the value of variable n (1..INT_MAX), or use a variable name, by 1 or an optional value.
+
+    ``Dec,<n|varname>[,<value>]`` (``value`` = 1 by default)
+
+    Examples:
+
+    ``Dec,1,4``
+
+    ``Dec,angle,0.005``
+    
+    See also ``Let`` and ``Inc``."
+    "
+    DeepSleep","
+    :red:`Internal`","
+    Switch the node to deep sleep.
+    Max sleep time depends on library version and differs from roughly 71 minutes (4294 sec.) to 3h46 for ESP8266, and up to 8 years (281474976 sec.) on ESP32 (theoretically).
+    If you specify a Min sleep time of 0, you'll have to wake the device yourself by pulling RST to GND. If you specify a negative sleep time value, the maximum will be applied.
+
+    ``DeepSleep,<sleep time in seconds>``"
+    "
+    Delay","
+    :green:`Rules`","
+    Delay rule processing. Warning: Do not use this as it may cause all kinds of issues.
+
+    ``Delay,<delay in milliSeconds>``"
+    "
+    DNS","
+    :red:`Internal`","
+    Get or set DNS configuration.
+
+    ``DNS``
+
+    ``DNS,8.8.8.8``
+    
+    Example output: ``DNS:192.168.88.1(DHCP)``"
+    "
+    DST","
+    :red:`Internal`","
+    Get or set Daylight Saving Time.
+
+    ``DST``
+
+    ``DST,0`` to disable, ``DST,1`` to enable
+    
+    Example output: ``DST:true``"
+    "
+    EraseSDKwifi","
+    :red:`Internal`","
+    Erase WiFi settings that may have been stored in the SDK wifi settings area.
+
+    ``EraseSDKwifi``"
+    "
+    Event","
+    :blue:`Special`","
+    Create an event, it's possible to send a float value along as well.
+
+    See event syntax below..."
+    "
+    ExecuteRules","
+    :red:`Internal`","
+    Execute the rules in a specific file on the file system.    
+
+    ``ExecuteRules,<filename>``"
+    "
+    FactoryReset","
+    :red:`Internal`","
+    Reset config to factory default. Caution, all settings will be lost!
+
+    |changed| 2024-08-10: Renamed ``Reset`` command to ``FactoryReset`` to avoid accidentally wiping the configuration when ``Reboot`` was the intended action...
+
+    ``FactoryReset``"
+    "
+    Gateway","
+    :red:`Internal`","
+    Get or set the gateway configuration
+
+    ``Gateway``
+
+    ``Gateway,192.168.1.1``
+    
+    Example output: ``Gateway:192.168.10.254(DHCP)``
+    "
+    "
+    HiddenSSID","
+    :red:`Internal`","
+    Get or set the Include Hidden SSID setting
+
+    ``HiddenSSID``
+
+    ``HiddenSSID,true`` (can use ``1``, ``true`` or ``on`` to enable, and ``0``, ``false`` or ``off`` to disable)
+    
+    Example output: ``Include Hidden SSID:true``"
+    "
+    I2Cscanner","
+    :red:`Internal`","
+    Run I2C scanner to find connected I2C chips. Output will be sent to the serial port.
+
+    ``I2Cscanner[,1]``
+    
+    Added: 2024-06-14:
+    With the optional debug argument ``1`` provided, the returned I2C status (error) code will be listed for *all* tested I2C addresses.
+
+    Added: 2024-06-14:
+    Scan is performed at the Low I2C speed configured (default 100 kHz). When having an I2C multiplexer configured, all channels of the multiplexer will also be scanned.
+
+    Example output:
+
+    .. code-block:: none
+
+     >i2cscanner
+     Standard I2C bus
+     I2C  : Found 0x3c
+     I2C  : Found 0x40
+     I2C  : Found 0x5a
+
+     >i2cscanner,1
+     Standard I2C bus
+     I2C  : Error 2 at 0x01
+     I2C  : Error 2 at 0x02
+     I2C  : Error 2 at 0x03
+     ...
+     I2C  : Error 2 at 0x3f
+     I2C  : Found 0x40
+     I2C  : Error 2 at 0x41
+     ...
+     I2C  : Error 2 at 0x7e
+     I2C  : Error 2 at 0x7f
+
+    "
+    "
+    Inc","
+    :red:`Internal`","
+    Increment the value of variable n (1..INT_MAX), or use a variable name, by 1 or an optional value.
+
+    ``Inc,<n|varname>[,<value>]`` (``value`` = 1 by default)
+
+    Example:
+
+    ``Inc,1,0.002``
+
+    ``Inc,border,2``
+    
+    See also ``Let`` and ``Dec``."
+    "
+    IP","
+    :red:`Internal`","
+    Get or set IP address
+
+    ``IP``
+
+    ``IP,<IP address>``
+    
+    Example output: ``IP:192.168.10.86(DHCP)``"
+    "
+    Let","
+    :red:`Internal`","
+    Set the value of variable n (1..INT_MAX), or use a variable name.
+
+    ``Let,<n|varname>,<value>``
+
+    Examples:
+
+    ``Let,1,10.5``
+
+    ``Let,border,3``
+    
+    See also ``Inc`` and ``Dec``."
+    "
+    Load","
+    :red:`Internal`","
+    Load (reload) the stored settings.
+
+    ``Load``"
+    "
+    LogEntry","
+    :red:`Internal`","
+    Add string to log
+
+    ``LogEntry,<string>[,<level>]``
+    
+    ``<level>`` is optional and can be any of these (numeric) values:
+    
+    - 1 = ERROR
+    - 2 = INFO (default)
+    - 3 = DEBUG
+    - 4 = DEBUG_DEV
+    
+    When a ``<level>`` is provided, it will be present in the log output if the 'Tolerant last parameter' Advanced setting is enabled."
+    "
+    LogPortStatus","
+    :red:`Internal`","
+    Display status information about all ports
+
+    ``LogPortStatus``"
+    "
+    LoopTimerSet
+
+    LoopTimerSet_ms","
+    :green:`Rules`","
+    Start a sequence of timed events
+
+    * ``LoopTimerSet,<timernr>,<timeInSeconds>``
+    * ``LoopTimerSet_ms,<timernr>,<time in msec>``
+    * ``LoopTimerSet,<timernr>,<timeInSeconds>,<nr of loops>``
+    * ``LoopTimerSet_ms,<timernr>,<time in msec>,<nr of loops>``
+    * ``LoopTimerSet,<timernr>,0`` (disables the timer)
+
+    The 3rd value is optional and can be used to set a fixed number of loops.
+
+    When possible, try using the ``LoopTimerSet`` funxtion (or its msec equivalent) to get a consistent schedule interval.
+    A loop timer is basing its next scheduled time on the previous scheduled time and not the moment when it is actually executed.
+    
+    On a typical setup, calling ``TimerSet`` from the rules every time a timer has expired, may cause a delay of at least 20 msec.
+    The actual jitter introduced here depends on the load of the node and the length of the rules.
+
+    Please note, the execution time in the rules may differ, but as long as a loop timer is used, the scheduled time to run is always a fixed interval from when it was set. (even when a timer interval was missed)
+
+    The ``Rules#Timer`` event generated by a timer has 2 event values. (since build 2020/08/12):
+
+    * ``%eventvalue1%`` has the timer number (1 ... max timer ID)
+    * ``%eventvalue2%`` has the loop count for loop timers (since build 2020/08/12)
+
+    See also ``TimerSet``.
+
+    N.B. the timernr is shared between ``TimerSet`` and ``LoopTimerSet``"
+    "
+    LoopTimerSetAndRun
+    
+    LoopTimerSetAndRun_ms","
+    Set a Loop-Timer using ``LoopTimerSet`` or ``LoopTimerSet_ms`` and immediately run the first iteration.
+
+    If a ``<nr of loops>`` value > 0 is included in the command, that count is decremented by 1 for the first iteration, as expected.
+    
+    Useful for setting a keep-alive timer, and also send the initial keep-alive signal immediately."
+    "
+    meminfo","
+    :red:`Internal`","
+    Will send summary of struct sizes to the serial port.
+
+    ``meminfo``
+    
+    Example output:
+
+    .. code-block:: none
+
+     4306250 : Info  : Command: meminfo
+     SecurityStruct         | 593      
+     SettingsStruct         | 1228
+     ExtraTaskSettingsStruct| 472 
+     DeviceStruct           | 12
+
+    "
+    "
+    meminfoDetail","
+    :red:`Internal`","
+    Will enable extra detailed information on the internal structure of the settings file.
+    This is displayed graphically in the system info page.
+    This state is not stored, so only active until reboot.
+
+    A detailed summary is also sent to the serial port.
+
+    ``meminfoDetail``"
+    "
+    Name","
+    :red:`Internal`","
+    Set the name of the unit
+
+    ``Name,<new name>``"
+    "
+    Notify","
+    :green:`Rules`","
+    Trigger a notification. Requires the notifier at the numbered index (1..3) to be enabled.
+
+    Optionally include the message body (quoted) and subject (quoted) to be passed. NB: The buzzer doesn't support a message body or subject.
+
+    Syntax: ``Notify,<notifier>[,<message>[,<subject>]]``
+
+    Example:
+
+    ``Notify,1,'The temperature is currently [ds#temp] degrees!','Temperature warning'``"
+    "
+    NTPHost[,<host-name_or_ip>]","
+    :red:`Internal`","
+    Set the name of the NTP-host
+
+    ``NTPHost,192.168.1.1`` -> Set an IP for the NTP host (local NTP server)
+    
+    ``NTPHost,""`` or ``NTPHost,`` -> Clear the NTP host so a default host from pool.ntp.org will be used. (As second argument *is* provided but empty.)"
+    "
+    OWScan","
+    :red:`Internal`","
+    Scan for & list 1-wire (One Wire = OW) devices on a GPIO pin.
+
+    Syntax: ``owscan,<rx-pin>[,<txpin>]``
+
+    If no separate TX pin is provided, the RX pin will be used as the TX pin too, as is the normal behavior for 1-wire communication. The separate TX pin is used on a Shelly device when adding the Shelly Temperature add-on (RX = GPIO-0 and TX = GPIO-3).
+
+    Example:
+
+    .. code-block:: none
+
+      >owscan,5
+      01-6e-56-8c-01-00-00-84 [DS1990A]    
+
+    "
+    "
+    Password","
+    :red:`Internal`","
+    Set the password of the unit.
+    See also ``ClearPassword``.
+
+    ``Password,<new password>``"
+    "
+    PostToHTTP","
+    :green:`Rules`","
+    *Syntax format 1:*
+
+    ``PostToHTTP,[<user>:<password>@]<host>,<port>,<uri>,[<headers>][,<postdata>]``
+
+    Post a command to other network device via HTTP using the http ``POST`` method.
+
+    ``<host>`` can be either a domain name or IP address.
+
+    ``<port>`` is the port to connect to, usually 80 for a HTTP site.
+
+    ``<uri>`` the path on the server to post the message to.
+
+    *Syntax format 2:*
+
+    ``PostToHTTP,http://[<user>:<password>@]<url>,[<headers>][,<postdata>]``
+
+    ``<url>`` is the full hostname (or IP address) and path on the server to post the content to.
+
+    *For both syntax formats:*
+
+    ``<user>`` is an optional user to supply for Basic authentication.
+
+    ``<password>`` is an optional password to supply for Basic authentication.
+
+    ``<headers>`` when provided will be added to the header of the ``POST`` message, has to be in ``<name>:<value>`` format. Can be used to supply a ``Authorization: Bearer <token>`` and/or ``api-key:<key>`` (instead of a user/password Basic authentication) and a ``Content-Type: <content-type>``. Multiple entries have to be separated by a NewLine (``%LF%``) to be processed correctly. When not used (empty) and ``<postdata>`` *is used*, the comma should still be included!
+
+    ``<postdata>`` is the optional content to include in the ``POST`` message. Can be anything, f.e. a JSON formatted string, like in the example below.
+
+    Syntax examples:
+
+    ``PostToHTTP,<host>,<Portnumber>,<uri>,[<headers>][,<postdata>]``
+
+    ``PostToHTTP,<user>:<pass>@<host>,<Portnumber>,<uri>,[<headers>][,<postdata>]``
+
+    ``PostToHTTP,http://<host>/<url>,[<headers>][,<postdata>]``
+
+    ``PostToHTTP,http://<user>:<pass>@<host>/<url>,[<headers>][,<postdata>]``
+
+    ``PostToHTTP,http://<host>:<Portnumber>/<url>,[<headers>][,<postdata>]``
+    
+    ``PostToHTTP,http://<user>:<pass>@<host>:<Portnumber>/<url>,[<headers>][,<postdata>]``
+
+    Example using syntax format 1:
+
+    ``PostToHTTP,user:password@192.168.1.100,8888,/someurl,'header1:value1%LF%header2:value2',`{'this':{'string':'can','be':'JSON','data':{'one':1,'two':2.0,'bool':true}}}```
+
+    Example using syntax format 2:
+
+    ``PostToHTTP,http://user:password@192.168.1.100:8888/someurl,'header1:value1%LF%header2:value2',`{'this':{'string':'can','be':'JSON','data':{'one':1,'two':2.0,'bool':true}}}```
+    
+    On completion of the command, the returned status code can be handled in a generated event, f.e. ``http#hostname=404`` for not found error, or ``http#hostname=200`` for success.
+
+    See also: ``PutToHTTP`` and ``SendToHTTP``
+
+    Added: 2023-01-15
+    "
+    "
+    ProvisionConfig","
+    :red:`Internal`","
+    Fetch ``config.dat`` as configured in the Provisioning configuration (see Settings Archive)
+
+    ``ProvisionConfig``"
+    "
+    ProvisionSecurity","
+    :red:`Internal`","
+    Fetch ``security.dat`` as configured in the Provisioning configuration (see Settings Archive)
+
+    ``ProvisionSecurity``"
+    "
+    ProvisionNotification","
+    :red:`Internal`","
+    Fetch ``notification.dat`` as configured in the Provisioning configuration (see Settings Archive)
+
+    ``ProvisionNotification``"
+    "
+    ProvisionProvision","
+    :red:`Internal`","
+    Fetch ``provisioning.dat`` as configured in the Provisioning configuration (see Settings Archive)
+
+    ``ProvisionProvision``"
+    "
+    ProvisionRules","
+    :red:`Internal`","
+    Fetch ``rulesN.txt`` as configured in the Provisioning configuration (see Settings Archive)
+
+    ``ProvisionRules,1`` to fetch ``rules1.txt`` "
+    "
+    Publish","
+    :green:`Rules`","
+    Send command using MQTT broker service. The 'Will Retain' option as configured in the MQTT Controller settings is used. Uses the first enabled MQTT Controller.
+
+    ``Publish,<topic>[,<payload>]``"
+    "
+    PublishR","
+    :green:`Rules`","
+    Send command using MQTT broker service, with the MQTT 'Will Retain' flag enabled. Uses the first enabled MQTT Controller.
+
+    ``PublishR,<topic>[,<payload>]``"
+    "
+    PutToHTTP","
+    :green:`Rules`","
+    *Syntax format 1:*
+
+    ``PutToHTTP,[<user>:<password>@]<host>,<port>,<uri>,[<headers>][,<putdata>]``
+
+    Send a command to another network device via HTTP using the http ``PUT`` method.
+
+    ``<host>`` can be either a domain name or IP address.
+
+    ``<port>`` is the port to connect to, usually 80 for a HTTP site.
+
+    ``<uri>`` the path on the server to put the message to.
+
+    *Syntax format 2:*
+
+    ``PutToHTTP,http://[<user>:<password>@]<url>,[<headers>][,<putdata>]``
+
+    ``<url>`` is the full hostname (or IP address) and path on the server to put the content to.
+
+    *For both syntax formats:*
+
+    ``<user>`` is an optional user to supply for Basic authentication.
+
+    ``<password>`` is an optional password to supply for Basic authentication.
+
+    ``<headers>`` when provided will be added to the header of the ``PUT`` message, has to be in ``<name>:<value>`` format. Can be used to supply a ``Authorization: Bearer <token>`` and/or ``api-key:<key>`` (instead of a user/password Basic authentication) and a ``Content-Type: <content-type>``. Multiple entries have to be separated by a NewLine (``%LF%``) to be processed correctly. When not used (empty) and ``<putdata>`` *is used*, the comma should still be included!
+
+    ``<putdata>`` is the optional content to include in the ``PUT`` message. Can be anything, f.e. a JSON formatted string, like in the example below.
+
+    Syntax examples:
+
+    ``PutToHTTP,<host>,<Portnumber>,<uri>,[<headers>][,<putdata>]``
+
+    ``PutToHTTP,<user>:<pass>@<host>,<Portnumber>,<uri>,[<headers>][,<putdata>]``
+
+    ``PutToHTTP,http://<host>/<url>,[<headers>][,<putdata>]``
+
+    ``PutToHTTP,http://<user>:<pass>@<host>/<url>,[<headers>][,<putdata>]``
+
+    ``PutToHTTP,http://<host>:<Portnumber>/<url>,[<headers>][,<putdata>]``
+    
+    ``PutToHTTP,http://<user>:<pass>@<host>:<Portnumber>/<url>,[<headers>][,<putdata>]``
+
+    Example using syntax format 1:
+
+    ``PutToHTTP,user:password@192.168.1.100,8888,/someurl,'header1:value1%LF%header2:value2',`{'this':{'string':'can','be':'JSON','data':{'one':1,'two':2.0,'bool':true}}}```
+
+    Example using syntax format 2:
+
+    ``PutToHTTP,http://user:password@192.168.1.100:8888/someurl,'header1:value1%LF%header2:value2',`{'this':{'string':'can','be':'JSON','data':{'one':1,'two':2.0,'bool':true}}}```
+    
+    On completion of the command, the returned status code can be handled in a generated event, f.e. ``http#hostname=404`` for not found error, or ``http#hostname=200`` for success.
+
+    See also: ``PostToHTTP`` and ``SendToHTTP``
+
+    Added: 2023-04-17
+    "
+    "
+    Reboot","
+    :red:`Internal`","
+    Reboot the ESP
+
+    ``Reboot``"
+    "
+    Reset","
+    :gray:`Renamed`","
+    |changed| 2024-08-10: Renamed ``Reset`` command to ``FactoryReset``.
+    "
+    "
+    Reset Flash Write Counter","
+    :red:`Internal`","
+    Reset flash write to zero.
+
+    ``ResetFlashWriteCounter``"
+    "
+    Rules","
+    :red:`Internal`","
+    Rules enabled (1) or rules disabled (0)
+
+    ``Rules,<1/0>``"
+    "
+    Save","
+    :red:`Internal`","
+    Save config to persistent flash memory
+
+    ``Save``"
+    "
+    ScheduleTaskRun","
+    :red:`Internal`","
+    (Added: 2023/02/10)
+    Schedule a call to ``TaskRun`` of the given task/device at given msec from now.
+    
+    ``ScheduleTaskRun,<task nr/task name>,<msec from now>``"
+    "
+    SendTo","
+    :green:`Rules`","
+    Send command to other ESP (using UDP)
+
+    ``SendTo,<unit nr>,<command>``
+    
+    If the ``<command>`` contains comma's or spaces, it should be quoted, like ``SendTo,<unit nr>,'<command>'``, the usual quotes can be used, double quotes, single quotes or backticks.
+    "
+    "
+    SendToHTTP","
+    :green:`Rules`","
+    Send command to other network device using HTTP (not HTTPS!)
+
+    ``<host>`` can be either domain name or IP.
+
+    ``<uri>`` is everything after the ``<host>`` in a normal url. 
+
+    Syntax:
+
+    ``SendToHTTP,<host>,<Portnumber>,<uri>``
+
+    ``SendToHTTP,<user>:<pass>@<host>,<Portnumber>,<uri>``  Added: 2022/07/23
+
+    ``SendToHTTP,http://<host>/<url>``  Added: 2022/07/23
+
+    ``SendToHTTP,http://<user>:<pass>@<host>/<url>``  Added: 2022/07/23
+
+    ``SendToHTTP,http://<host>:<Portnumber>/<url>``  Added: 2022/07/23
+    
+    ``SendToHTTP,http://<user>:<pass>@<host>:<Portnumber>/<url>``  Added: 2022/07/23
+
+    Example:
+
+    ``sendtohttp,192.168.10.114,80,'control?cmd=event,poff'``
+    
+    On completion of the command, the returned status code can be handled in a generated event, f.e. ``http#hostname=404`` for not found error, or ``http#hostname=200`` for success.
+    "
+    "
+    SendToUDP","
+    :green:`Rules`","
+    Send command to other network device using UDP (non-ESP Easy units)
+
+    ``SendToUDP,<IP address>,<Portnumber>,<command>``"
+    "
+    SendToUDPMix","
+    :green:`Rules`","
+    Send command to other network device using UDP (non-ESP Easy units) and allow for binary data to be sent.
+
+    ``SendToUDPMix,<IP address>,<Portnumber>,'<content to send>'``
+    
+    ``<content to send>``: Text and/or hex byte(s) (having 0x prefix) that will be sent (nearly) unprocessed. Only the regular variable replacements will be applied before sending the content to the remote device. The content has to be quoted if it contains commas or spaces. When using multiple parts, parts that have spaces or commas must *also* be quoted, and use a different quote character!
+    "
+    "
+    Settings","
+    :red:`Internal`","
+    Show settings on serial terminal
+
+    ``Settings``"
+    "
+    Subnet","
+    :red:`Internal`","
+    Get or set the network subnet setting
+
+    ``Subnet``
+
+    Example output: ``Subnet:255.255.255.0(DHCP)``
+
+    ``Subnet,255.255.255.0``"
+    "
+    Subscribe","
+    :green:`Rules`","
+    Subscribes to a specific topic using MQTT broker service
+
+    ``Subscribe,<topic>``"
+    "
+    TaskClear","
+    :red:`Internal`","
+    Delete the given task/device
+
+    ``TaskClear,<task nr/task name>``"
+    "
+    TaskClearAll","
+    :red:`Internal`","
+    Delete ALL task/device
+
+    ``TaskClearAll``"
+    "
+    TaskDisable","
+    :red:`Internal`","
+    Disable a task.
+    This will not save the settings, but if the settings get saved anyway the task will remain disabled at reboot.
+
+    ``TaskDisable,<task nr/task name>``"
+    "
+    TaskEnable","
+    :red:`Internal`","
+    Enable a task. (only possible when a plugin is assigned to the task)
+    This will not save the settings, but if the settings get saved anyway the task will remain enabled at reboot.
+
+    ``TaskEnable,<task nr/task name>``"
+    "
+    TaskRun","
+    :red:`Internal`","
+    Run/excecute the given task/device, use to manually force an update/read of the task.
+
+    ``TaskRun,<task nr/task name>``"
+    "
+    TaskRunAt","
+    :red:`Internal`","
+    (Added: 2023/02/10)
+    Run/excecute the given task/device, use to manually force an update/read of the task.
+    Difference with ``TaskRun`` is the 2nd parameter which represents a UnixTime which should be used by the connected controller instead of the current time.
+    Typical use case is to combine samples of various tasks as if they were taken at the same time.
+
+    .. note:: Not all plugins do immediately produce a result, as some re-schedule themselves after the measurement has completed. Those will not keep this suggested timestamp.
+              Dummy tasks do keep this suggested timestamp.
+              Not all controllers will use the suggested timestamp. The Cache Controller does use this.
+
+    N.B. This does not schedule to run a task in the future, but only provides a suggested timestamp to hand over to the controller(s).
+    For scheduling to run a task, see ``ScheduleTaskRun``.
+
+    ``TaskRunAt,<task nr/task name>,<UnixTime timestamp>``"
+    "
+    TaskValueSet","
+    :green:`Rules`","
+    Set values on a **Dummy Task** (device).
+
+    ``TaskValueSet,<task nr/task name>,<value nr/value name>,<value/formula>``"
+    "
+    TaskValueSetAndRun","
+    :green:`Rules`","
+    Set values on a **Dummy Task** (device) and run/execute the task/device, to manually force an update/read of the task.
+
+    ``TaskValueSetAndRun,<task nr/task name>,<value nr/value name>,<value/formula>``"
+    "
+    TaskValueSetDerived","
+    :green:`Rules`","
+    Define a Derived value for a task. A Derived value is an extra value, available for the device, that can return a calculated result, based on any variable available in the system.
+
+    ``TaskValueSetDerived,<task nr/task name>,<value name>,<formula>[,<UnitOfMeasure>][,<VType>]`` (Added: 2025/05/31, only available when String Variables feature is included in the build)
+    
+    ``<task nr/task name>``: Either a task number or a task name, for the task to add the derived value to.
+
+    ``<value name>``: A name for the derived value, numbers can not be used, only by name.
+
+    ``<formula>``: The formula to calculate and return as the value for the derived value. The content of the formula should be escaped, else the rules processor will fill the current values, instead of during retrieval of the derived value. Formulas often contain spaces or commas, if so they have to be quoted. See examples.
+
+    ``<UnitOfMeasure>``: An optional Unit of Measure to be appended after the value. Must be quoted if it contains spaces or commas. Not case-sensitive, 'official' value will be used if the Unit of Measure selector is included in the build. (Added:2025/06/08)
+
+    ``<VType>``: The ValueType to be used for MQTT AutoDiscovery. The same values as available in the Value Type combobox on the Device configuration page can be used (not case-sensitive, 'official' value will be used) (Added: 2025/06/19)
+
+    **Examples:**
+
+    In ``On System#Boot Do`` you can add the definition for a derived value, here we have a BME task, where we want to add a DewPoint value and a value for degrees Fahrenheit. All symbols used for addressing conversions, functions and variables, like ``%``, ``{``, ``}``, ``[`` and ``]`` are escaped by using a ``\``.
+
+    ``TaskValueSetDerived,BME,DewPoint,'\%c_dew_th\%(\[BME#temperature\],\[BME#humidity\])'``
+
+    ``TaskValueSetDerived,BME,Fahrenheit,'\%c_c2f\%(\[BME#temperature\])'``
+    
+    In other places, like rules, and in Display tasks, you can now use ``[BME#DewPoint]`` and ``[BME#Fahrenheit]`` to retrieve the freshly calculated result of the formulas. NB: If the value doesn't get updated, most likely the formula wasn't escaped properly, and the *calculated result* is stored in memory, instead of the formula.
+
+    Derived values can be shown on the Devices overview page, and included in the ``/json`` output, by enabling the **Show derived values** checkbox in the device configuration. The value will be included in event generation if the per-task **Event & Log derived values** checkbox is enabled.
+    "
+    "
+    TaskValueSetPresentation","
+    :green:`Rules`","
+    Define a presentation formula for a task. The presentation result will be used when displaying the devices values on the Devices overview page, and as the ``Value`` in the ``/json`` output, as that's used for refreshing the Devices page.
+
+    ``TaskValueSetPresentation,<task nr/task name>,<value name>,<formula>`` (Added: 2025/05/31, only available when String Variables feature is included in the build)
+    
+    ``<task nr/task name>``: Either a task number or a task name, for the task to add the presentation formula to.
+
+    ``<value name>``: The name for the value to apply the presentation on, numbers can not be used, only by name. Existing plugin value names and Derived value names can be used.
+
+    ``<formula>``: The formula to calculate and return as the display for the addressed value. Use the ``%value%`` placeholder to insert the current Value, this can be used multiple times if needed. The content of the formula should probably be escaped, as the rules processor might fill the current values, instead of during retrieval of the presentation value, though this can be used to expand f.e. string variables only once. Formulas often contain spaces or commas, if so they have to be quoted. See examples.
+
+    .. note:: NB: The Presentation set using this command doesn't alter the values retrieved by using the ``[<TaskName>#<ValueName>]`` variable reference in rules!
+
+    **Examples:**
+
+    ``TaskValueSetPresentation,bme,Temperature,'%value% {D}C'``
+
+    ``TaskValueSetPresentation,bme,Humidity,'%value%% RH'``
+
+    ``TaskValueSetPresentation,bme,Pressure,'%value% mBar'``
+
+    ``TaskValueSetPresentation,bme,DewPoint,'%value% {D}C'``
+
+    ``TaskValueSetPresentation,bme,Fahrenheit,'%value% {D}F'``
+
+    Here we define a presentation formula for all values, including the Derived values, of the BME task.
+
+    If the **Show derived values** checkbox is enabled, it could look like this for a BME280 task:
+
+    .. image:: TaskValueSetPresentation_BME280.png
+
+    **Change presentation from numeric to text:**
+
+    For another device, there is a numeric presentation of a climate system that should be presented in readable text:
+
+    In ``On System#Boot Do`` this line is added, setting a string with the mapping from numeric to text:
+
+    ``LetStr,FHC,'Undefined     Fan  &#128168;Heat &#128293;Cool &#129482;' // 14 characters per item``
+
+    And also:
+
+    ``TaskValueSetPresentation,dummy,Run_cycle,'\{lookup:%value%:14:`\[str#FHC\]`\} (%value%)'``
+
+    This uses the ``LookUp`` string function to convert the numeric value to a string, including an unicode smiley, representing the corresponding state. The presentation formula also shows the numeric value for the more technical inclined user.
+
+    .. image:: TaskValueSetPresentation_LookUp.png
+
+    Derived values for Cool, Fan and Heat have also been added as illustration.
+
+    This example also shows that the Derived values (all below Run_cycle) are presented in alphabetic order, not case-sensitive.
+
+    **Present extra values for Sysinfo plugin**:
+
+    In ``On System#Boot Do`` we add:
+
+    ``TaskValueSetDerived,sysinfo,InternalTemp,\[sysinfo#internaltemp\]``
+
+    ``TaskValueSetPresentation,sysinfo,InternalTemp,'%value% {D}C \%c_c2f\%(%value%) {D}F'``
+
+    This adds the Derived value for InternalTemp, that maps to the existing Get Config value ``[SysInfo#InternalTemp]``, but as that value has higher priority than the Derived value, it's not overwritten by the formula for the Derived value, but it still causes this value to be presented on the Devices page (adding a ``TaskValueSetPresentation`` doesn't, as that must also be applied to existing Task values).
+
+    The formula for ``TaskDeviceSetPresentation`` shows both the Celcius and Fahrenheit temperatures, applying the available conversion for that.
+
+    .. image:: TaskValueSetPresentation_Sysinfo.png
+
+    A simplified version of ``TaskValueSetPresentation`` is available, directly in the Formula field of a plugin (if that's available): Place a ``$`` as the first character in the Formula field, and the rest of the field will be used as a Presentation formula. The available space there is quite limited, that's why this ``TaskValueSetPresentation`` command was added. The direct value in the Formula field *overrides* the formula set via this command, though.
+    "
+    "
+    TimerPause","
+    :green:`Rules`","
+    Pause a timer
+
+    ``TimerPause,<timer number>``"
+    "
+    TimerResume","
+    :green:`Rules`","
+    Resume a paused timer
+
+    ``TimerResume,<timer number>``"
+    "
+    TimerSet
+
+    TimerSet_ms","
+    :green:`Rules`","
+    Start a timed event
+
+    * ``TimerSet,<timernr>,<timeInSeconds>``
+    * ``TimerSet_ms,<timernr>,<time in msec>``
+    * ``TimerSet,<timernr>,0`` (disables the timer)
+
+    See also ``LoopTimerSet``
+
+    N.B. the timernr is shared between ``TimerSet`` and ``LoopTimerSet``"
+    "
+    TimeZone","
+    :red:`Internal`","
+    Get or set the TimeZone
+
+    ``TimeZone``
+
+    Example output: ``TimeZone:60``
+
+    ``TimeZone,<minutes from UTC>``"
+    "
+    UdpPort","
+    :red:`Internal`","
+    Set the udp port
+
+    ``UdpPort,<port>``"
+    "
+    UdpTest","
+    :red:`Internal`","
+    Send a test message to an udp port, for <count> number of times
+
+    ``UdpTest,<port>,<count>``"
+    "
+    Unit","
+    :red:`Internal`","
+    Set the unit number
+
+    ``Unit,<unit number>``"
+    "
+    UseNTP","
+    :red:`Internal`","
+    Get or set the status of NTP (Network Time Protocol)
+
+    ``UseNTP``
+
+    Example output: ``UseNTP:true``
+
+    ``UseNTP,<0/1>``"
+    "
+    WdConfig","
+    :red:`Internal`","
+    Configure external Watchdog device
+
+    ``WdConfig,<address>,<command>,<data>``"
+    "
+    WdRead","
+    :red:`Internal`","
+    Read from external Watchdog device
+
+    ``WdRead,<address>,<pointer/register>``"
+    "
+    WifiAPKey","
+    :red:`Internal`","
+    Change AP WPA key
+
+    ``WifiAPKey,<WPA key>``"
+    "
+    WifiAllowAP","
+    :red:`Internal`","
+    Uncheck the setting to prevent starting AP when unable to connect to a network.
+
+    ``WifiAllowAP``"
+    "
+    WifiAPMode","
+    :red:`Internal`","
+    Force the unit into AP mode.
+
+    ``WifiAPMode``"
+    "
+    WifiConnect","
+    :red:`Internal`","
+    Connect to configured wireless network
+
+    ``WifiConnect``"
+    "
+    WifiDisconnect","
+    :red:`Internal`","
+    Disconnect from wireless network
+
+    ``WifiDisconnect``"
+    "
+    WifiKey","
+    :red:`Internal`","
+    Change WPA key for primary WiFi
+
+    ``WifiKey,<Wifi WPA key>``"
+    "
+    WifiKey2","
+    :red:`Internal`","
+    Change WPA key for secondary WiFi
+
+    ``WifiKey2,<Wifi WPA key>``"
+    "
+    WifiScan","
+    :red:`Internal`","
+    Scan Wireless networks
+
+    ``WifiScan``"
+    "
+    WifiSSID","
+    :red:`Internal`","
+    Change SSID to connect as primary WiFi
+
+    ``WifiSSID,<SSID>``"
+    "
+    WifiSSID2","
+    :red:`Internal`","
+    Change SSID to connect as secondry WiFi
+
+    ``WifiSSID2,<SSID>``"
+    "
+    WifiSTAMode","
+    :red:`Internal`","
+    Force the unit into STA mode.
+
+    ``WifiSTAMode``"
+
+
+
+Event command
+~~~~~~~~~~~~~
+
+The event command is a special command used to trigger an event. This event can then be acted upon from the rules.
+You can send 0..4 event values along with the event.
+
+An event will be executed immediately if its origin demands a state update.
+For events which do not need to be executed immediately, we have the AsyncEvent, which is added to an event queue.
+This queue is processed 10 times per second, one event at a time.
+
+Try to use AsyncEvents where possible, to keep rules processing times low.
+
+
+.. csv-table::
+    :header: "Event / Info"
+    :widths: 1
+
+    "
+    ``Event,SingleEvent``
+
+    The event (triggered by any of the launch ways) will make the unit publish a message.
+
+    **Rules example**
+
+    .. code-block:: none
+
+        on SingleEvent do
+          Publish,%sysname%/Info,A single event has been triggered!
+        endon
+
+    "
+    "
+    ``Event,SingleValue=123``
+
+    The event value ``123`` is intercepted and published.
+
+    **Rules example**
+
+    .. code-block:: none
+
+      on SingleValue do
+        Publish,%sysname%/Info,An event has been sent (%eventvalue%)!
+      endon
+
+    "
+    "
+    ``Event,Multi=1,2,3,99``
+
+    The event value ``99`` (4) is intercepted and the rule ``TaskValueSet...`` is
+    triggered, value of task 12 value 1 is then ``1 + 2`` = ``3`` or ``1 - 2`` = ``-1``.
+
+    **Rules example**
+
+    .. code-block:: none
+
+      on Multi do
+        if %eventvalue4%=99
+          TaskValueSet,12,1,[%eventvalue1%+%eventvalue2%]
+        else
+          TaskValueSet,12,1,[%eventvalue3%-%eventvalue2%]
+        endif
+      endon
+
+    "
+

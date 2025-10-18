@@ -1,0 +1,22 @@
+.. include:: ../Plugin/_plugin_substitutions_p03x.repl
+.. _P030_page:
+
+|P030_typename|
+==================================================
+
+Name: |P030_name|
+
+Status: |P030_status|
+
+.. note:: 
+  This plugin has been replaced by :ref:`p028_page` (though that will need reconfiguration)
+
+Change log
+----------
+
+.. versionchanged:: 2.0
+  ...
+
+  |changed| 2023-02-10
+  Removed from repository.
+

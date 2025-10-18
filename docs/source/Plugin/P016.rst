@@ -1,0 +1,71 @@
+.. include:: ../Plugin/_plugin_substitutions_p01x.repl
+.. _P016_page:
+
+|P016_typename|
+==================================================
+
+|P016_shortinfo|
+
+Plugin details
+--------------
+
+Type: |P016_type|
+
+Name: |P016_name|
+
+Status: |P016_status|
+
+GitHub: |P016_github|_
+
+Maintainer: |P016_maintainer|
+
+Used libraries: |P016_usedlibraries|
+
+.. include:: P016_TSOP4838.rst
+
+Supported hardware
+------------------
+
+|P016_usedby|
+
+.. Commands available
+.. ^^^^^^^^^^^^^^^^^^
+
+.. .. include:: P016_commands.repl
+
+.. Events
+.. ~~~~~~
+
+.. .. include:: P016_events.repl
+
+Change log
+----------
+
+.. versionchanged:: 2.0
+  ...
+
+  2022-08-08:
+
+  |added|
+  The buffer used for receiving and processing the incoming data can now be manually configured.
+
+  2021-05-24:
+
+  |added|
+  Support for IR codes up to 64 bit with separated Decode type and Repeat option, existing settings are converted, reworked the settings UI to reflect those changes.
+
+  .
+
+  |added|
+  Major overhaul for 2.0 release.
+
+.. versionadded:: 1.0
+  ...
+
+  |added|
+  Initial release version.
+
+
+
+
+

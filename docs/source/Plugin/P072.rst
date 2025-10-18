@@ -1,0 +1,66 @@
+.. include:: ../Plugin/_plugin_substitutions_p07x.repl
+.. _P072_page:
+
+|P072_typename|
+==================================================
+
+|P072_shortinfo|
+
+Plugin details
+--------------
+
+Type: |P072_type|
+
+Name: |P072_name|
+
+Status: |P072_status|
+
+GitHub: |P072_github|_
+
+Maintainer: |P072_maintainer|
+
+Used libraries: |P072_usedlibraries|
+
+Supported hardware
+------------------
+
+|P072_usedby|
+
+.. Commands available
+.. ^^^^^^^^^^^^^^^^^^
+
+.. .. include:: P072_commands.repl
+
+.. Events
+.. ~~~~~~
+
+.. .. include:: P072_events.repl
+
+Datasheets
+----------
+
+- `HDC1000 <https://www.ti.com/lit/ds/symlink/hdc1000.pdf>`_
+- `HDC1008 <https://www.ti.com/lit/ds/symlink/hdc1008.pdf>`_
+- `HDC1010 <https://www.ti.com/lit/ds/symlink/hdc1010.pdf>`_
+- `HDC1050 <https://www.ti.com/lit/ds/symlink/hdc1050.pdf>`_
+- `HDC1080 <https://www.ti.com/lit/ds/symlink/hdc1080.pdf>`_
+
+Change log
+----------
+
+.. versionchanged:: 2.0
+  ...
+
+  |added|
+  Major overhaul for 2.0 release.
+
+.. versionadded:: 1.0
+  ...
+
+  |added|
+  Initial release version.
+
+
+
+
+

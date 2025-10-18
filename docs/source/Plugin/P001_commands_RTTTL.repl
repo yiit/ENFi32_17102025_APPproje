@@ -1,0 +1,56 @@
+.. These P001 commands should be moved to core (P000)...
+
+:ref:`P000_page` |P000_status|
+
+Supported hardware: |P000_usedby_RTTTL| (Ringtones etc.)
+
+.. csv-table::
+  :header: "Command (GPIO/Value)", "Extra information"
+  :widths: 20, 30
+
+  "
+  ``tone,<gpio>,<tone>,<duration>``
+
+  ESP8266 GPIO: 0 ... 16
+
+  ESP32 GPIO: All GPIO pins with output capabilities
+
+  Tone: 20 ... 13000 Hz
+
+  Duration: 100 ... 15000 msec
+  ","
+  ESP8266: You should try to use GPIO 12...16 since these generally aren't used.
+  
+  The recommended tone range is 20 Hz ... 13 kHz.
+  Up-to 40 kHz should be possible to generate, but will be inaudible for humans.
+  Frequencies above 30 kHz are not stable and will likely crash the ESP.
+
+  Duration is set in ms.
+
+  N.B. tones with a duration less than 50 msec will be blocking.
+  Longer duration will use the scheduler, which may cause some fluctuations in the duration.
+  "
+  "
+  ``rtttl,<gpio>,<value>``
+
+  ESP8266 GPIO: 0 ... 16
+
+  ESP32 GPIO: All GPIO pins with output capabilities
+
+  Value: d=<duration>,o=<octave>,b=<tempo>,<notes...>
+  ","
+  ESP8266: You should try to use GPIO 12...16 since these generally aren't used by ESP internal functions.
+  
+  Value can be defined like <name_of_melody:duration,octave,beat,notes....>
+
+  For example:
+  ``rtttl,14,test:d=8,o=5,b=180,c6,b,c6,p,g,g-``
+
+  `More RTTTL Ringtone Downloads <http://www.picaxe.com/RTTTL-Ringtones-for-Tune-Command/>`_
+
+  Since 2023-09-15:
+
+  The ``rtttl`` command, by default, now uses the `AnyRtttl library <https://github.com/end2endzone/AnyRtttl>`_, allowing asynchronous handling of the command. This has the advantage of being non-blocking, allowing ESPEasy to handle other tasks while the tune is being played, but comes with the disadvantage of the output possibly being interrupted/delayed by other (possibly blocking) tasks and events, so the music may not play continuously.
+
+  Also, the previous implementation may not have stopped sound correctly after playing a song, but as this has been corrected, so there is no longer a need to turn off the GPIO after playing a song.
+  "

@@ -1,0 +1,421 @@
+.. csv-table::
+   :header: "Event", "Example"
+   :widths: 30, 20
+
+   "
+   ``<taskname>#<valuename>``
+   As described already, each task can produced one or more events, one for each measured value. You should not name your devices and value names so that the combination equals to any of the below listed system events!
+   ","
+
+   .. code-block:: none
+
+        on DHT11Outside#Temperature>20 do
+         GPIO,2,1
+        endon
+
+   "
+   "
+   ``TaskInit#<taskname>``
+   Triggered when a tasks ``PLUGIN_INIT`` was called.
+   This can happen at boot, when a task is enabled, or ``TaskEnable`` command is used.
+   ","
+
+   .. code-block:: none
+
+        on TaskInit#bme do
+          LogEntry,'TaskInit task: %eventvalue1% result: %eventvalue2%'
+        endon
+
+   The first event value is the task index, the second event value is the return value of the ``PLUGIN_INIT`` call.
+   The task index can be useful to store in a variable so the task index of a specific plugin like the dummy plugin can be stored to keep rules exchangeble among nodes regardless the order of tasks.
+   "
+   "
+   ``TaskExit#<taskname>``
+   Triggered when a tasks ``PLUGIN_EXIT`` was called.
+   This can happen when entering deep sleep, when a task is disabled, or ``TaskDisable`` command is used.
+   ","
+
+   .. code-block:: none
+
+        on TaskExit#bme do
+          LogEntry,'TaskExit task: %eventvalue1% result: %eventvalue2%'
+        endon
+
+   "
+   "
+   ``TaskError#<taskname>``
+   Added: 2022-06-21
+   Triggered when a tasks ``PLUGIN_READ`` caused an error.
+   The reason to trigger this error is plugin specific and this is not implemented for all plugins.
+   For example, the BMx280 plugin will trigger this event when it was unable to start a measurement, for example when the sensor does not reply or its reply is unexpected.
+   ","
+
+   .. code-block:: none
+
+        on TaskError#bme do
+          LogEntry,'TaskError task: %eventvalue1% result: %eventvalue2%'
+        endon
+
+   The first event value is the task index, the second event value is a plugin specific indicator of the error that occured.
+   N.B. The second event value can be a string.
+   "
+   "
+   ``System#Wake``
+   Triggered after power on.
+   ","
+
+   .. code-block:: none
+
+        on System#Wake do
+          GPIO,15,1
+        endon
+
+   "
+   "
+   ``System#BootMode``
+   Added: 2021-10-18
+  
+   On ESP32-series only.
+
+   Event is sent right before network connection is attempted.
+
+   On normal boots (GPIO-0 is high), the ESP32 can record the state of a number of pins and make these available after boot in the ``GPIO_STRAP_REG``.
+
+   ","
+
+   .. code-block:: none
+
+        on System#BootMode do
+          LogEntry,'Boot pins: GPIO-5: %eventvalue1%, GPIO-15: %eventvalue2%, GPIO-4: %eventvalue3%, GPIO-2: %eventvalue4%'
+        endon
+
+   For the classic ESP32, the event values represent the state of these pins in the following order:
+
+   * GPIO-5: ``%eventvalue1%`` (internal pull-up, default: ``1``)
+   * GPIO-15: ``%eventvalue2%`` (internal pull-up, default: ``1``)
+   * GPIO-4: ``%eventvalue3%`` (internal pull-down, default: ``0``)
+   * GPIO-2: ``%eventvalue4%`` (internal pull-down, default: ``0``)
+
+   The standard BootMode event will be: ``System#BootMode=1,1,0,0``
+   
+   N.B. When pulling down GPIO-15 during boot, the ROM bootloader messages will be silenced.
+
+   N.B.2 Do not pull GPIO-2 high when GPIO-0 is low for programming mode.
+
+   See 'Boot Strapping Pins' documentation for the boot strapping pins for all ESP32-series chips.
+
+   "
+   "
+   ``System#Boot``
+   Triggered at boot time.
+   ","
+
+   .. code-block:: none
+
+      on System#Boot do
+        GPIO,2,1
+        timerSet,1,30
+      endon
+
+   "
+   "
+   ``System#Sleep``
+   Triggered just before the ESP goes to deep sleep.
+   ","
+
+   .. code-block:: none
+
+	   on System#Sleep do
+	    GPIO,2,0
+	   endon
+
+   "
+   "
+   ``http#hostname=404``
+   Added: 2022/07/23
+   Triggered as a 'return value' when performing a HTTP call to some host.
+   The event value is the HTTP return code.
+   The ``hostname`` is replaced by the hostname used in the HTTP call.
+   ","
+
+   .. code-block:: none
+
+	   on http#192.168.1.2 do
+       if %eventvalue1%!=200
+         // %eventvalue1% is HTTP Code
+         // %eventpar% is the part of the event after the #, thus here it is the hostname
+         LogEntry,'HTTP error: %eventvalue1% to: %eventpar%:'
+       endif
+	   endon
+
+   "
+   "
+   ``MQTT#Connected``
+   Triggered when the ESP has connected to broker.
+   ","
+
+   .. code-block:: none
+
+	   on MQTT#Connected do
+	    Publish,%sysname%/status,First message!
+	   endon
+
+   "
+   "
+   ``MQTT#Disconnected``
+   Triggered when the ESP has disconnected from the broker.
+   ","
+
+   .. code-block:: none
+
+	   on MQTT#Disconnected do
+	    Reboot
+	   endon
+
+   "
+   "
+   ``MQTTimport#Connected``
+   Triggered when the ESP has connected to broker (the MQTT Import plugin uses a separate connection than the generic one).
+   ","
+
+   .. code-block:: none
+
+	   on MQTTimport#Connected do
+	    Publish,%sysname%/status,MQTT Import is now operational
+	   endon
+
+   "
+   "
+   ``MQTTimport#Disconnected``
+   Triggered when the ESP has disconnected from the broker (the MQTT Import plugin uses a separate connection than the generic one).
+   ","
+
+   .. code-block:: none
+
+	   on MQTTimport#Disconnected do
+	    Reboot
+	   endon
+
+   "
+   "
+   ``p2pNode#Connected``
+
+   Added: 2024-05-01
+
+   Triggered when a new ESPEasy p2p node has been seen.
+   N.B. Only for nodes with a valid unit ID (not 0)
+
+   Eventvalues:
+
+   - Unit ID
+
+   - Node name
+
+   - Build number/date
+   ","
+
+   .. code-block:: none
+
+	   on p2pNode#Connected do
+	     LogEntry,'ESPEasy p2p node %eventvalue1% added: %eventvalue2% with build %eventvalue3%'
+	   endon
+
+   "
+   "
+   ``p2pNode#Disconnected``
+
+   Added: 2024-05-01
+  
+   Triggered when a ESPEasy p2p node has been removed from the nodes list.
+   N.B. Only for nodes with a valid unit ID (not 0)   
+
+   Eventvalues:
+
+   - Unit ID
+   ","
+
+   .. code-block:: none
+
+	   on p2pNode#Disconnected do
+	     LogEntry,`ESPEasy p2p node %eventvalue1% not seen for a while`
+	   endon
+
+   "
+   "
+   ``WiFi#Connected``
+   Triggered when the ESP has connected to Wi-Fi.
+   ","
+
+   .. code-block:: none
+
+	   on WiFi#Connected do
+	    SendToHTTP,url.com,80,/report.php?hash=123abc456&t=[temp2#out]
+	   endon
+
+   "
+   "
+   ``WiFi#Disconnected``
+   Triggered when the ESP has disconnected from Wi-Fi.
+   ","
+
+   .. code-block:: none
+
+	  On WiFi#Disconnected Do
+	    LongPulse,2,1,1,1,-1 // 0.5 Hz flashing of WiFi led
+	  Endon
+    
+   .. code-block:: none
+
+    On WiFi#Connected Do
+      GPIO,2,1 // Turn off WiFi led
+      SendToHTTP,url.com,80,/report.php?hash=123abc456&t=[temp2#out]
+    Endon
+
+   "
+   "
+   ``WiFi#ChangedAccesspoint``
+   Triggered when the ESP has changed to access point, will also trigger first time the unit connects to the Wi-Fi.
+   ","
+
+   .. code-block:: none
+
+	   on WiFi#ChangedAccesspoint do
+	    Publish,%sysname%/status,AP changed
+	   endon
+
+   "
+   "
+   ``WiFi#ChangedWiFichannel``
+   Triggered when the ESP is connected to the AP on a different channel, will also trigger first time the unit connects to the Wi-Fi.
+   This has been added in build mega-20190910
+   ","
+
+   .. code-block:: none
+
+	   on WiFi#ChangedWiFichannel do
+	    Publish,%sysname%/status,channel changed
+	   endon
+
+   "
+   "
+   ``WiFi#APmodeEnabled``
+   Triggered when the ESP has set the AP mode (access point) active.
+   This may happen when no valid WiFi settings are found or the ESP cannot connect to the set AP, but it can also be enabled via some command.
+   N.B. Sending a publish command may not be very useful on this event, since this will mainly happen when there is no WiFi connection.
+   ","
+
+   .. code-block:: none
+
+	   on WiFi#APmodeEnabled do
+	    ... // Some command
+	   endon
+
+   "
+   "
+   ``WiFi#APmodeDisabled``
+   Triggered when the ESP has disabled the AP mode (access point).
+   This can happen some time (default 60 seconds) after a WiFi connection has been made. Or disabled using some command.
+   ","
+
+   .. code-block:: none
+
+	   on WiFi#APmodeDisabled do
+	    Publish,%sysname%/status,AP disabled
+	   endon
+
+   "
+   "
+   ``Login#Failed``
+   Triggered when (someone) has tried to login to a ESP unit with admin password enabled, but have failed to enter correct password.
+   ","
+
+   .. code-block:: none
+
+	   on Login#Failed do
+	    Publish,%sysname%/warning,Intruder alert!
+	   endon
+
+   "
+   "
+   ``Time#Initialized``
+   Triggered the first time (after boot) NTP is updating the unit.
+   ","
+
+   .. code-block:: none
+
+	   on Time#Initialized do
+	    Publish,%sysname%/Time,%systime%
+	   endon
+
+   "
+   "
+   ``Time#Set``
+   Triggered when the time is set by an update from NTP.
+   ","
+
+   .. code-block:: none
+
+	   on Time#Set do
+	    Publish,%sysname%/Time,%systime%
+	    Publish,%sysname%/NTP,Updated time at: %systime%
+	   endon
+
+   "
+   "
+   ``Rules#Timer=``
+   As described already, triggered when a rules timer ends (setting a timer to 0 will disable the timer).
+   ","
+
+   .. code-block:: none
+
+	   on Rules#Timer=1 do
+	    GPIO,2,1
+	   endon
+
+   "
+   "
+   ``Clock#Time=``
+   Triggered every minute with day and time like: Mon,12:30 or Tue,14:45. You can define triggers on specific days or all days using 'All' for days indicator. You can also use wildcards in the time setting like All,**:00 to run every hour.
+
+   For handling events to only be executed on weekdays (Mon..Fri), the day indicator 'Wrk' (work) can be used, and for weekend days (Sat, Sun), the day indicator 'Wkd' is available.
+   ","
+
+   .. code-block:: none
+
+	   on Clock#Time=All,12:00 do //will run once a day at noon
+	    GPIO,2,1
+	   endon
+
+	   on Clock#Time=All,**:30 do //will run half past every hour
+	    GPIO,2,1
+	   endon
+
+	   on Clock#Time=All,%sunrise% do //will run at sunrise  (%sunset% is also available)
+	    GPIO,2,1
+	   endon
+
+   "
+   "
+   ``GPIO#N``
+   If the command 'Monitor' is used to monitor a given pin you will receive an event for that GPIO as soon as it's state changes. As seen in the example you can always use the square brackets together with the task/value name of ``Plugin#GPIO#Pinstate#N`` to get the state, but to trigger events you need to add the monitor command (preferably at boot).
+   ","
+
+   .. code-block:: none
+
+       on System#Boot do
+        Monitor GPIO,15
+       endon
+
+        on GPIO#15=0 do
+         if [Plugin#GPIO#Pinstate#13]=0
+          // do something
+         endif
+        endon
+
+        on GPIO#15=1 do
+         if [Plugin#GPIO#Pinstate#13]=1
+          // do something
+         endif
+        endon
+
+   "

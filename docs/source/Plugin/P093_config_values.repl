@@ -1,0 +1,60 @@
+.. csv-table::
+    :header: "Config value", "Information"
+    :widths: 20, 30
+
+    "
+    | ``[<taskname>#roomTemperature]``
+    ","
+    | Value as received from the connected device, includes 1 decimal.
+    | When Remote Temperature is used, received value is rounded to the nearest 0.5 C.
+    "
+    "
+    | ``[<taskname>#wideVane]``
+    ","
+    | Value as received from the connected device.
+    "
+    "
+    | ``[<taskname>#power]``
+    ","
+    | Value as received from the connected device.
+    "
+    "
+    | ``[<taskname>#mode]``
+    ","
+    | Value as received from the connected device.
+    "
+    "
+    | ``[<taskname>#fan]``
+    ","
+    | Value as received from the connected device.
+    "
+    "
+    | ``[<taskname>#vane]``
+    ","
+    | Value as received from the connected device.
+    "
+    "
+    | ``[<taskname>#iSee]``
+    ","
+    | Value as received from the connected device, 1 = on/enabled, 0 = off/disabled.
+    "
+    "
+    | ``[<taskname>#temperature]``
+    ","
+    | Value as received from the connected device, includes 1 decimal.
+    "
+    "
+    | ``[<taskname>#operating]``
+    ","
+    | Value as received from the connected device, when ``Include AC status`` is enabled, 1 = on, 0 = off.
+    "
+    "
+    | ``[<taskname>#compressorFrequency]``
+    ","
+    | Value as received from the connected device, when ``Include AC status`` is enabled.
+    "
+    "
+    | ``[<taskname>#remoteTemperature]``
+    ","
+    | Value as received from the connected device, includes 1 decimal.
+    "
