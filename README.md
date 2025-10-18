@@ -318,4 +318,8 @@ Additional details and discussion are on the "Experimental" section of the forum
 
 ## Icons used
 
-Icons on courtesy of [ICONS8](https://icons8.com/).
+---
+
+**ENFi32** - Enhanced ESP32 IoT Firmware
+
+---
