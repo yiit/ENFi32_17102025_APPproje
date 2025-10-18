@@ -214,6 +214,12 @@ void WiFiEventData_t::markDisconnect(WiFiDisconnectReason reason) {
   lastDisconnectMoment.setNow();
   usedChannel = 0;
 
+  // ENFi32: İlk connection failure'ı işaretle (adaptive timer başlat)
+  if (!firstConnectionFailure.isSet() && wifi_connect_attempt > 0) {
+    firstConnectionFailure.setNow();
+    addLog(LOG_LEVEL_INFO, F("ENFi32: First connection failure detected, starting adaptive timers"));
+  }
+
   if (last_wifi_connect_attempt_moment.isSet() && !lastConnectMoment.isSet()) {
     // There was an unsuccessful connection attempt
     lastConnectedDuration_us = last_wifi_connect_attempt_moment.timeDiff(lastDisconnectMoment);
@@ -289,4 +295,41 @@ uint32_t WiFiEventData_t::getSuggestedTimeout(int index, uint32_t minimum_timeou
   }
   const uint32_t res = 3 * it->second;
   return constrain(res, minimum_timeout, CONNECT_TIMEOUT_MAX);
+}
+
+// ********************************************************************************
+// ENFi32: Adaptive WiFi timeout management functions
+// ********************************************************************************
+
+bool WiFiEventData_t::shouldActivateAPMode() const {
+  // 2 dakika sonra AP modu aktif et
+  return firstConnectionFailure.isSet() && 
+         firstConnectionFailure.timeoutReached(120000) && // 2 dakika
+         !adaptiveAPModeActive;
+}
+
+bool WiFiEventData_t::shouldReduceRetryRate() const {
+  // 5 dakika sonra retry'ları azalt
+  return firstConnectionFailure.isSet() && 
+         firstConnectionFailure.timeoutReached(300000); // 5 dakika
+}
+
+bool WiFiEventData_t::shouldDisableSTA() const {
+  // 15 dakika sonra STA'yı kapat
+  return firstConnectionFailure.isSet() && 
+         firstConnectionFailure.timeoutReached(900000) && // 15 dakika
+         !adaptiveSTADisabled;
+}
+
+uint32_t WiFiEventData_t::getAdaptiveRetryInterval() const {
+  if (shouldReduceRetryRate()) {
+    return 60000; // 1 dakika (azaltılmış)
+  }
+  return 30000; // 30 saniye (normal)
+}
+
+void WiFiEventData_t::resetAdaptiveTimers() {
+  firstConnectionFailure.clear();
+  adaptiveAPModeActive = false;
+  adaptiveSTADisabled = false;
 }

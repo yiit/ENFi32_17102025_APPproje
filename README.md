@@ -18,22 +18,13 @@ Bu proje, ESPEasy tabanlı gelişmiş ESP32 IoT firmware'i için özel yapıland
 - **Otomatik Failsafe**: Başarısız bağlantılarda otomatik AP modu
 - **Akıllı Retry Sistemi**: Agresif yeniden deneme mekanizması
 
-#### 2. WiFi Smart Manager (UPTIME BAZLI)
-- **Uptime Bazlı WiFi Yönetimi**: 
-  - 0-3 dakika: Agresif mod (5 saniye retry)
-  - 3-10 dakika: Kritik mod (15 saniye retry) 
-  - 10+ dakika: Stabil mod (30 saniye retry)
-- **Sağlık Kontrolü**: RSSI izleme ve bağlantı kalitesi analizi
-- **Emergency Mode**: Otomatik AP modu aktivasyonu
-- **Web Dashboard**: Gerçek zamanlı durum izleme
-
-#### 3. Serial Monitor System
+#### 2. Serial Monitor System
 - **Advanced Data Analysis**: Hex/ASCII görüntüleme
 - **Pattern Detection**: Tekrarlayan veri desenleri
 - **Character Frequency**: Karakter frekans analizi
 - **Real-time Monitoring**: Anlık seri port izleme
 
-#### 4. Güvenlik Geliştirmeleri
+#### 3. Güvenlik Geliştirmeleri
 - **WiFi Failsafe Settings**: Agresif bağlantı timeout'ları
 - **Connection Monitoring**: Sürekli bağlantı durumu kontrolü
 - **Auto AP Mode**: Başarısız bağlantılarda otomatik geri dönüş
@@ -83,9 +74,6 @@ pio run -e [environment] --target upload
 ### Custom.h Ayarları
 ```cpp
 #define DEFAULT_NAME        "ENFi32"
-#define FEATURE_WIFI_SMART_MANAGER           1
-#define WIFI_SMART_LOGGING                   1
-#define WEBSERVER_WIFI_MANAGER               1
 #define WEBSERVER_SERIALMONITOR              1
 ```
 
@@ -100,8 +88,6 @@ pio run -e [environment] --target upload
 
 ### WiFi Management
 - `/setup` - Enhanced WiFi setup page
-- `/wifimanager` - Smart WiFi dashboard
-- `/setup?action=force_emergency` - Trigger emergency mode
 
 ### Serial Monitoring  
 - `/serialmonitor` - Serial data viewer
@@ -116,7 +102,7 @@ pio run -e [environment] --target upload
 
 ### Memory Usage
 - **Flash**: ~1.2MB (optimized)
-- **RAM**: ~45KB (base) + Smart Manager overhead
+- **RAM**: ~45KB (base optimized)
 - **PSRAM**: Available for large data operations
 
 ## 🛠️ Development
@@ -127,7 +113,6 @@ pio run -e [environment] --target upload
 
 ### Debug Options
 ```cpp
-#define WIFI_SMART_LOGGING                   1
 #define SERIAL_MONITOR_DEBUG                 1
 ```
 
@@ -135,7 +120,6 @@ pio run -e [environment] --target upload
 
 ### v1.0.0 (Current)
 - ✅ Enhanced WiFi Setup System
-- ✅ WiFi Smart Manager (Uptime-based)
 - ✅ Serial Monitor Interface
 - ✅ Failsafe Mechanisms
 - ✅ ESP32/ESP32-S3 Support

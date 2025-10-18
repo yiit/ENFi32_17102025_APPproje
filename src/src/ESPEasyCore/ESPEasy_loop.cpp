@@ -22,10 +22,6 @@
 #include "../Helpers/PeriodicalActions.h"
 #include "../Helpers/StringConverter.h"
 
-#ifdef FEATURE_WIFI_SMART_MANAGER
-#include "../Helpers/WiFiSmartManager.h"
-#endif
-
 #include "../Commands/InternalCommands_decoder.h"
 
 void updateLoopStats() {
@@ -175,11 +171,6 @@ void ESPEasy_loop()
 
   // Calls above may have received/generated commands for the command queue, thus need to process them.
   processExecuteCommandQueue();
-  
-  #ifdef FEATURE_WIFI_SMART_MANAGER
-  // WiFi Smart Manager - Uptime bazlı akıllı WiFi yönetimi
-  WiFiSmartManager::handle();
-  #endif
   
   backgroundtasks();
 

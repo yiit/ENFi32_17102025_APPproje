@@ -43,6 +43,13 @@ struct WiFiEventData_t {
   void clear_processed_flags();
   void markWiFiBegin();
 
+  // ENFi32: Akıllı WiFi timeout sistemi
+  bool shouldActivateAPMode() const;          // 2 dakika sonra AP modu aktif et
+  bool shouldReduceRetryRate() const;         // 5 dakika sonra retry'ları azalt  
+  bool shouldDisableSTA() const;              // 15 dakika sonra STA'yı kapat
+  uint32_t getAdaptiveRetryInterval() const;  // Zamana göre retry interval
+  void resetAdaptiveTimers();                 // Timer'ları sıfırla
+
   bool WiFiDisconnected() const {
     return wifiStatus == ESPEASY_WIFI_DISCONNECTED;
   }
@@ -153,6 +160,12 @@ struct WiFiEventData_t {
 
   unsigned long connectionFailures = 0;
 
+  // ENFi32: Adaptive WiFi timeout management
+  LongTermTimer wifiBootupTimer;              // Boot'tan itibaren geçen süre 
+  LongTermTimer firstConnectionFailure;       // İlk başarısız bağlantı zamanı
+  bool          adaptiveAPModeActive = false; // AP modu adaptive olarak aktif mi
+  bool          adaptiveSTADisabled = false;  // STA modu adaptive olarak devre dışı mı
+  
   std::map<uint8_t, long>connectDurations;
 
 #ifdef ESP32

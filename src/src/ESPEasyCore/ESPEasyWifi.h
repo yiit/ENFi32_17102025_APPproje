@@ -26,6 +26,13 @@
 #define WIFI_SCAN_INTERVAL_AP_USED         125000 // in milliSeconds
 #define WIFI_SCAN_INTERVAL_MINIMAL          60000 // in milliSeconds
 
+// ENFi32: Adaptive WiFi timeout settings
+#define WIFI_ADAPTIVE_AP_ACTIVATION_TIME    120000 // 2 dakika = AP mode aktif et
+#define WIFI_ADAPTIVE_RETRY_REDUCE_TIME     300000 // 5 dakika = retry'ları azalt
+#define WIFI_ADAPTIVE_STA_DISABLE_TIME      900000 // 15 dakika = STA'yı devre dışı
+#define WIFI_ADAPTIVE_RETRY_NORMAL          30000  // Normal retry interval (30 sn)
+#define WIFI_ADAPTIVE_RETRY_REDUCED         60000  // Azaltılmış retry interval (60 sn)
+
 
 #ifdef ESPEASY_WIFI_CLEANUP_WORK_IN_PROGRESS
 

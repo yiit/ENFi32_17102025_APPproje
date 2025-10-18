@@ -309,6 +309,9 @@ bool WiFiConnected() {
     if (!WiFiEventData.wifiSetupConnect) {
       WiFiEventData.timerAPstart.clear();
     }
+    // ENFi32: Reset adaptive timers on successful connection
+    WiFiEventData.resetAdaptiveTimers();
+    
     STOP_TIMER(WIFI_ISCONNECTED_STATS);
     recursiveCall = false;
     // Only return true after some time since it got connected.
@@ -343,6 +346,16 @@ bool WiFiConnected() {
 
 
   // When made this far in the code, we apparently do not have valid WiFi connection.
+  
+  // ENFi32: Check for adaptive AP mode activation (2 dakika sonra)
+  if (WiFiEventData.shouldActivateAPMode()) {
+    WiFiEventData.adaptiveAPModeActive = true;
+    addLog(LOG_LEVEL_INFO, F("ENFi32: Activating AP mode after 2 minutes of connection failures"));
+    if (!WifiIsAP(WiFi.getMode())) {
+      setAP(true); // STA + AP mode (dual mode)
+    }
+  }
+  
   if (!WiFiEventData.timerAPstart.isSet() && !WifiIsAP(WiFi.getMode())) {
     // First run we do not have WiFi connection any more, set timer to start AP mode
     // Only allow the automatic AP mode in the first N minutes after boot.
@@ -466,9 +479,24 @@ void AttemptWiFiConnect() {
   }
 
   if (WiFiEventData.last_wifi_connect_attempt_moment.isSet()) {
-    if (!WiFiEventData.last_wifi_connect_attempt_moment.timeoutReached(DEFAULT_WIFI_CONNECTION_TIMEOUT)) {
+    // ENFi32: Use adaptive retry interval instead of fixed timeout
+    uint32_t adaptiveTimeout = WiFiEventData.getAdaptiveRetryInterval();
+    if (!WiFiEventData.last_wifi_connect_attempt_moment.timeoutReached(adaptiveTimeout)) {
       return;
     }
+  }
+
+  // ENFi32: Check if STA should be disabled (15 dakika sonra)
+  if (WiFiEventData.shouldDisableSTA()) {
+    if (!WiFiEventData.adaptiveSTADisabled) {
+      WiFiEventData.adaptiveSTADisabled = true;
+      addLog(LOG_LEVEL_INFO, F("ENFi32: STA mode disabled after 15 minutes, keeping AP only"));
+      setSTA(false);
+      if (!WifiIsAP(WiFi.getMode())) {
+        setAP(true);
+      }
+    }
+    return; // STA devre dışı, bağlantı deneme
   }
 
   if (WiFiEventData.unprocessedWifiEvents()) {
@@ -662,7 +690,7 @@ bool checkAndResetWiFi() {
 
 
 void resetWiFi() {
-  //if (wifiAPmodeActivelyUsed()) return;
+  if (wifiAPmodeActivelyUsed()) return; // ENFi32: AP mode aktifken WiFi reset atma!
   if (WiFiEventData.lastWiFiResetMoment.isSet() && !WiFiEventData.lastWiFiResetMoment.timeoutReached(1000)) {
     // Don't reset WiFi too often
     return;

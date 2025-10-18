@@ -13,9 +13,6 @@
 #include "../ESPEasyCore/ESPEasyWifi_ProcessEvent.h"
 #include "../ESPEasyCore/Serial.h"
 
-#ifdef FEATURE_WIFI_SMART_MANAGER
-#include "../Helpers/WiFiSmartManager.h"
-#endif
 #include "../Globals/Cache.h"
 #include "../Globals/ESPEasy_Console.h"
 #include "../Globals/ESPEasyWiFiEvent.h"
@@ -240,11 +237,6 @@ void ESPEasy_setup()
   initWiFi();
   WiFiEventData.clearAll();
   
-  #ifdef FEATURE_WIFI_SMART_MANAGER
-  // WiFi Smart Manager'ı başlat
-  WiFiSmartManager::init();
-  #endif
-
 #ifndef BUILD_MINIMAL_OTA
   run_compiletime_checks();
 #endif // ifndef BUILD_MINIMAL_OTA
