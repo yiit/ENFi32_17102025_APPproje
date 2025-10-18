@@ -23,6 +23,7 @@
 #include "../Helpers/Misc.h"
 #include "../Helpers/PortStatus.h"
 #include "../Helpers/StringConverter.h"
+#include "../WebServer/SerialMonitor.h"
 
 #include "../_Plugin_Helper.h"
 
@@ -120,7 +121,7 @@ void hardwareInit()
   bool hasPullUp, hasPullDown;
 
   for (int gpio = 0; gpio <= MAX_GPIO; ++gpio) {
-    const bool serialPinConflict = isSerialConsolePin(gpio);
+    const bool serialPinConflict = isSerialConsolePin(gpio) || isSerialMonitorPin(gpio);
 
     if (!serialPinConflict) {
       const uint32_t key = createKey(PLUGIN_GPIO, gpio);
@@ -206,6 +207,11 @@ void hardwareInit()
   }
 
   initI2C();
+
+  #ifdef WEBSERVER_SETUP
+  // Yazıcı Serial'i başlat
+  initPrinterSerialOnBoot();
+  #endif
 
   #if FEATURE_PLUGIN_PRIORITY
   String dummy;

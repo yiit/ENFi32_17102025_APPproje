@@ -1280,3 +1280,344 @@ function jumpToLineInTextarea(textarea, lineNumber) {
   }
 });
 
+// ===== ESPEasy Enhanced UI - Modern JavaScript Enhancements =====
+
+(function() {
+    'use strict';
+    
+    // Enhanced UI namespace
+    window.ESPEasyUI = window.ESPEasyUI || {};
+    
+    // Utility functions
+    ESPEasyUI.utils = {
+        // Debounce function for performance
+        debounce: function(func, wait) {
+            var timeout;
+            return function executedFunction() {
+                var context = this;
+                var args = arguments;
+                var later = function() {
+                    timeout = null;
+                    func.apply(context, args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        },
+        
+        // DOM ready utility
+        ready: function(fn) {
+            if (document.readyState !== 'loading') {
+                fn();
+            } else {
+                document.addEventListener('DOMContentLoaded', fn);
+            }
+        },
+        
+        // AJAX utility function
+        ajax: function(options) {
+            var xhr = new XMLHttpRequest();
+            var method = options.method || 'GET';
+            var url = options.url;
+            var data = options.data || null;
+            
+            xhr.open(method, url, true);
+            
+            if (options.headers) {
+                Object.keys(options.headers).forEach(function(key) {
+                    xhr.setRequestHeader(key, options.headers[key]);
+                });
+            }
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        if (options.success) {
+                            var response = xhr.responseText;
+                            try {
+                                response = JSON.parse(response);
+                            } catch (e) {
+                                // Keep as text if not JSON
+                            }
+                            options.success(response);
+                        }
+                    } else {
+                        if (options.error) {
+                            options.error(xhr.status, xhr.statusText);
+                        }
+                    }
+                }
+            };
+            
+            xhr.send(data);
+        }
+    };
+    
+    // Toast notification system
+    ESPEasyUI.toast = {
+        show: function(message, type, duration) {
+            type = type || 'info';
+            duration = duration || 3000;
+            
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(function() {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove
+            setTimeout(function() {
+                toast.classList.remove('show');
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+        },
+        
+        success: function(message, duration) {
+            this.show(message, 'success', duration);
+        },
+        
+        error: function(message, duration) {
+            this.show(message, 'error', duration);
+        },
+        
+        warning: function(message, duration) {
+            this.show(message, 'warning', duration);
+        }
+    };
+    
+    // Status indicator system
+    ESPEasyUI.status = {
+        indicators: {},
+        
+        add: function(element, type) {
+            if (typeof element === 'string') {
+                element = document.querySelector(element);
+            }
+            
+            if (!element) return;
+            
+            var indicator = document.createElement('span');
+            indicator.className = 'status-indicator status-' + type;
+            
+            // Insert before element text
+            element.insertBefore(indicator, element.firstChild);
+            
+            this.indicators[element.id || 'unnamed'] = {
+                element: element,
+                indicator: indicator,
+                type: type
+            };
+        },
+        
+        update: function(elementId, type) {
+            var status = this.indicators[elementId];
+            if (status) {
+                status.indicator.className = 'status-indicator status-' + type;
+                status.type = type;
+            }
+        }
+    };
+    
+    // Enhanced form handling
+    ESPEasyUI.forms = {
+        enhance: function(form) {
+            if (typeof form === 'string') {
+                form = document.querySelector(form);
+            }
+            
+            if (!form) return;
+            
+            // Add loading state on submit
+            form.addEventListener('submit', function(e) {
+                var submitBtn = form.querySelector('input[type="submit"], button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    var originalText = submitBtn.value || submitBtn.textContent;
+                    submitBtn.value = 'Processing...';
+                    submitBtn.textContent = 'Processing...';
+                    
+                    // Add spinner
+                    var spinner = document.createElement('span');
+                    spinner.className = 'loading-spinner';
+                    spinner.style.marginLeft = '8px';
+                    submitBtn.appendChild(spinner);
+                    
+                    // Restore after timeout (fallback)
+                    setTimeout(function() {
+                        submitBtn.disabled = false;
+                        submitBtn.value = originalText;
+                        submitBtn.textContent = originalText;
+                        if (spinner.parentNode) {
+                            spinner.parentNode.removeChild(spinner);
+                        }
+                    }, 10000);
+                }
+            });
+            
+            // Enhanced input validation
+            var inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(function(input) {
+                input.addEventListener('blur', function() {
+                    ESPEasyUI.forms.validateField(input);
+                });
+            });
+        },
+        
+        validateField: function(field) {
+            var isValid = field.checkValidity();
+            
+            field.classList.remove('field-valid', 'field-invalid');
+            
+            if (field.value.trim() !== '') {
+                field.classList.add(isValid ? 'field-valid' : 'field-invalid');
+            }
+        }
+    };
+    
+    // Real-time updates system
+    ESPEasyUI.realtime = {
+        intervals: {},
+        
+        start: function(name, callback, interval) {
+            interval = interval || 5000; // Default 5 seconds
+            
+            this.intervals[name] = setInterval(callback, interval);
+        },
+        
+        stop: function(name) {
+            if (this.intervals[name]) {
+                clearInterval(this.intervals[name]);
+                delete this.intervals[name];
+            }
+        },
+        
+        stopAll: function() {
+            Object.keys(this.intervals).forEach(function(name) {
+                ESPEasyUI.realtime.stop(name);
+            });
+        }
+    };
+    
+    // Initialize enhanced UI features
+    ESPEasyUI.init = function() {
+        // Enhance all forms
+        document.querySelectorAll('form').forEach(function(form) {
+            ESPEasyUI.forms.enhance(form);
+        });
+        
+        // Add smooth scrolling to anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Enhanced button interactions
+        document.querySelectorAll('.button, input[type="submit"], input[type="button"]').forEach(function(btn) {
+            // Add ripple effect on click
+            btn.addEventListener('click', function(e) {
+                var ripple = document.createElement('span');
+                ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,0.6);transform:scale(0);animation:ripple 0.6s linear;';
+                
+                var rect = this.getBoundingClientRect();
+                var size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(function() {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 600);
+            });
+        });
+        
+        // Auto-refresh functionality for status pages
+        if (window.location.pathname === '/' || window.location.pathname.includes('json')) {
+            ESPEasyUI.realtime.start('status', function() {
+                ESPEasyUI.updateStatus();
+            }, 10000); // Every 10 seconds
+        }
+    };
+    
+    // Update status information
+    ESPEasyUI.updateStatus = function() {
+        ESPEasyUI.utils.ajax({
+            url: '/json',
+            success: function(data) {
+                // Update WiFi status if available
+                if (data.WiFi) {
+                    var wifiElements = document.querySelectorAll('[data-wifi-status]');
+                    wifiElements.forEach(function(el) {
+                        var status = data.WiFi.connected ? 'online' : 'offline';
+                        ESPEasyUI.status.update(el.id, status);
+                    });
+                }
+                
+                // Update system info if available
+                if (data.System) {
+                    var uptimeEl = document.querySelector('[data-uptime]');
+                    if (uptimeEl && data.System.uptime) {
+                        uptimeEl.textContent = data.System.uptime;
+                    }
+                    
+                    var memEl = document.querySelector('[data-memory]');
+                    if (memEl && data.System.free_memory) {
+                        memEl.textContent = data.System.free_memory;
+                    }
+                }
+            },
+            error: function() {
+                // Silently handle errors to avoid console spam
+            }
+        });
+    };
+    
+    // CSS animations keyframes (injected via JavaScript)
+    var cssAnimations = `
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+        
+        .field-valid { border-color: #4CAF50 !important; }
+        .field-invalid { border-color: #f44336 !important; }
+    `;
+    
+    // Inject animations
+    var style = document.createElement('style');
+    style.textContent = cssAnimations;
+    document.head.appendChild(style);
+    
+    // Initialize when DOM is ready
+    ESPEasyUI.utils.ready(function() {
+        ESPEasyUI.init();
+    });
+    
+    // Clean up intervals when page unloads
+    window.addEventListener('beforeunload', function() {
+        ESPEasyUI.realtime.stopAll();
+    });
+
+})();
+

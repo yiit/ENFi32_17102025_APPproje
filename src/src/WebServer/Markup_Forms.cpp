@@ -541,7 +541,7 @@ void addFormPinStateSelect(int gpio, int choice)
 {
   bool enabled = true;
 
-  if (isSerialConsolePin(gpio)) {
+  if (isSerialConsolePin(gpio) || isSerialMonitorPin(gpio)) {
     // do not add the pin state select for these pins.
     enabled = false;
   }

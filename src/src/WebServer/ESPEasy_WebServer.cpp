@@ -292,7 +292,7 @@ void WebServerInit()
 #ifdef WEBSERVER_SETUP
   web_server.on(F("/setup"),       handle_setup);
   web_server.on(F("/setup_enhanced"), handle_enhanced_setup);
-  web_server.on(F("/serialmonitor"), handle_serial_monitor);    // YENİ
+  web_server.on(F("/serialmonitor"), handle_serial_monitor);    // BASIT VERSİYON
 #endif // ifdef WEBSERVER_SETUP
 #ifdef WEBSERVER_SYSINFO
   web_server.on(F("/sysinfo"),     handle_sysinfo);

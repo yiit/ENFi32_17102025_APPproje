@@ -28,6 +28,8 @@ bool validGpio(int gpio);
 
 bool isSerialConsolePin(int gpio);
 
+bool isSerialMonitorPin(int gpio);
+
 
 #ifdef ESP32
 

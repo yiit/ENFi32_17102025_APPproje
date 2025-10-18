@@ -220,7 +220,7 @@ void addPinSelector_Item(PinSelectPurpose purpose, const String& gpio_label, int
         disabled = true;
       }
 
-      if (includeSerial && isSerialConsolePin(gpio)) {
+      if (includeSerial && (isSerialConsolePin(gpio) || isSerialMonitorPin(gpio))) {
         disabled = true;
       }
 

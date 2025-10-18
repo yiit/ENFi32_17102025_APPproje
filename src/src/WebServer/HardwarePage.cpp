@@ -38,6 +38,20 @@ void handle_hardware() {
   TXBuffer.startStream();
   sendHeadandTail_stdtemplate(_HEAD);
 
+  // Serial port seçenekleri
+  const __FlashStringHelper *serialPortNames[] = {
+    F("- None -"),
+    F("SC16IS752"),
+    F("Serial0"),
+    F("Serial0 Swap (ESP8266)"),
+    F("Serial1"),
+    F("Serial2"),
+    F("Software Serial"),
+    F("USB HW CDC"),
+    F("USB CDC 0")
+  };
+  const int serialPortValues[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
   if (isFormItem(F("pled"))) {
     String error;
     Settings.Pin_status_led           = getFormItemInt(F("pled"));
@@ -132,10 +146,29 @@ void handle_hardware() {
 #endif
     Settings.NetworkMedium            = static_cast<NetworkMedium_t>(getFormItemInt(F("ethwifi")));
     #endif // if FEATURE_ETHERNET
+    
+    // Serial Monitor ayarları
+    Settings.serialmonitor_port     = getFormItemInt(F("serialmonport"));
+    Settings.serialmonitor_rxpin    = getFormItemInt(F("serialmonrx"));
+    Settings.serialmonitor_txpin    = getFormItemInt(F("serialmontx"));
+    Settings.serialmonitor_baud     = getFormItemInt(F("serialmonbaud"));
+    Settings.serialmonitor_databits = getFormItemInt(F("serialmondatabits"));
+    Settings.serialmonitor_stopbits = getFormItemInt(F("serialmonstopbits"));
+    Settings.serialmonitor_parity   = getFormItemInt(F("serialmonparity"));
+    
+    // Yazıcı Serial ayarları
+    Settings.printer_port     = getFormItemInt(F("printerport"));
+    Settings.printer_rxpin    = getFormItemInt(F("printerrx"));
+    Settings.printer_txpin    = getFormItemInt(F("printertx"));
+    Settings.printer_baud     = getFormItemInt(F("printerbaud"));
+    Settings.printer_databits = getFormItemInt(F("printerdatabits"));
+    Settings.printer_stopbits = getFormItemInt(F("printerstopbits"));
+    Settings.printer_parity   = getFormItemInt(F("printerparity"));
+    
     int gpio = 0;
 
     while (gpio <= MAX_GPIO) {
-      if (isSerialConsolePin(gpio)) {
+      if (isSerialConsolePin(gpio) || isSerialMonitorPin(gpio)) {
         // do not add the pin state select for these pins.
       } else {
         if (validGpio(gpio)) {
@@ -166,6 +199,99 @@ void handle_hardware() {
   addFormSubHeader(F("Reset Pin"));
   addFormPinSelect(PinSelectPurpose::Reset_pin, formatGpioName_input(F("Switch")), F("pres"), Settings.Pin_Reset);
   addFormNote(F("Press about 10s for factory reset"));
+
+  addFormSubHeader(F("Serial Monitor"));
+  
+  // Serial Port
+  addRowLabel(F("Serial Port"));
+  addSelector_Head(F("serialmonport"));
+  for (uint8_t i = 0; i < 9; i++) {
+    addSelector_Item(serialPortNames[i], serialPortValues[i], Settings.serialmonitor_port == serialPortValues[i]);
+  }
+  addSelector_Foot();
+  
+  // Pin seçimi
+  addFormPinSelect(PinSelectPurpose::Generic, formatGpioName_input(F("RX")), F("serialmonrx"), Settings.serialmonitor_rxpin);
+  addFormPinSelect(PinSelectPurpose::Generic, formatGpioName_output(F("TX")), F("serialmontx"), Settings.serialmonitor_txpin);
+  
+  // Baud Rate
+  addRowLabel(F("Baud Rate"));
+  addSelector_Head(F("serialmonbaud"));
+  uint32_t baudRates[] = {9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+  for (int i = 0; i < 8; i++) {
+    addSelector_Item(String(baudRates[i]), baudRates[i], Settings.serialmonitor_baud == baudRates[i]);
+  }
+  addSelector_Foot();
+  
+  // Data Bits
+  addRowLabel(F("Data Bits"));
+  addSelector_Head(F("serialmondatabits"));
+  addSelector_Item(F("7"), 7, Settings.serialmonitor_databits == 7);
+  addSelector_Item(F("8"), 8, Settings.serialmonitor_databits == 8);
+  addSelector_Foot();
+  
+  // Stop Bits
+  addRowLabel(F("Stop Bits"));
+  addSelector_Head(F("serialmonstopbits"));
+  addSelector_Item(F("1"), 1, Settings.serialmonitor_stopbits == 1);
+  addSelector_Item(F("2"), 2, Settings.serialmonitor_stopbits == 2);
+  addSelector_Foot();
+  
+  // Parity
+  addRowLabel(F("Parity"));
+  addSelector_Head(F("serialmonparity"));
+  addSelector_Item(F("None"), 0, Settings.serialmonitor_parity == 0);
+  addSelector_Item(F("Odd"), 1, Settings.serialmonitor_parity == 1);
+  addSelector_Item(F("Even"), 2, Settings.serialmonitor_parity == 2);
+  addSelector_Foot();
+  
+  addFormNote(F("Hardware Serial configuration for Serial Monitor"));
+
+  addFormSubHeader(F("Yazıcı Serial"));
+  
+  // Serial Port
+  addRowLabel(F("Serial Port"));
+  addSelector_Head(F("printerport"));
+  for (uint8_t i = 0; i < 9; i++) {
+    addSelector_Item(serialPortNames[i], serialPortValues[i], Settings.printer_port == serialPortValues[i]);
+  }
+  addSelector_Foot();
+  
+  // Pin seçimi
+  addFormPinSelect(PinSelectPurpose::Generic, formatGpioName_input(F("RX")), F("printerrx"), Settings.printer_rxpin);
+  addFormPinSelect(PinSelectPurpose::Generic, formatGpioName_output(F("TX")), F("printertx"), Settings.printer_txpin);
+  
+  // Baud Rate
+  addRowLabel(F("Baud Rate"));
+  addSelector_Head(F("printerbaud"));
+  for (int i = 0; i < 8; i++) {
+    addSelector_Item(String(baudRates[i]), baudRates[i], Settings.printer_baud == baudRates[i]);
+  }
+  addSelector_Foot();
+  
+  // Data Bits
+  addRowLabel(F("Data Bits"));
+  addSelector_Head(F("printerdatabits"));
+  addSelector_Item(F("7"), 7, Settings.printer_databits == 7);
+  addSelector_Item(F("8"), 8, Settings.printer_databits == 8);
+  addSelector_Foot();
+  
+  // Stop Bits
+  addRowLabel(F("Stop Bits"));
+  addSelector_Head(F("printerstopbits"));
+  addSelector_Item(F("1"), 1, Settings.printer_stopbits == 1);
+  addSelector_Item(F("2"), 2, Settings.printer_stopbits == 2);
+  addSelector_Foot();
+  
+  // Parity
+  addRowLabel(F("Parity"));
+  addSelector_Head(F("printerparity"));
+  addSelector_Item(F("None"), 0, Settings.printer_parity == 0);
+  addSelector_Item(F("Odd"), 1, Settings.printer_parity == 1);
+  addSelector_Item(F("Even"), 2, Settings.printer_parity == 2);
+  addSelector_Foot();
+  
+  addFormNote(F("Hardware Serial configuration for Printer function"));
 
   #if FEATURE_I2CMULTIPLEXER
   const __FlashStringHelper *i2c_muxtype_options[] = {

@@ -24,3 +24,17 @@ bool isSerialConsolePin(int gpio) {
   return false;
 #endif
 }
+
+bool isSerialMonitorPin(int gpio) {
+  // Serial Monitor pinlerini kontrol et
+  if (gpio == Settings.serialmonitor_rxpin || gpio == Settings.serialmonitor_txpin) {
+    return true;
+  }
+  
+  // Yazıcı Serial pinlerini kontrol et
+  if (gpio == Settings.printer_rxpin || gpio == Settings.printer_txpin) {
+    return true;
+  }
+  
+  return false;
+}

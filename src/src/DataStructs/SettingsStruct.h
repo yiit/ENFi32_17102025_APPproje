@@ -627,6 +627,24 @@ public:
   int8_t        console_serial_txpin = DEFAULT_CONSOLE_PORT_TXPIN;
   uint8_t       console_serial0_fallback = DEFAULT_CONSOLE_SER0_FALLBACK;
   
+  // Serial Monitor ayarları
+  uint8_t       serialmonitor_port = 4; // Default Serial1 (ESPEasySerialPort::serial1)
+  int8_t        serialmonitor_rxpin = 15; // ESP32S3 default
+  int8_t        serialmonitor_txpin = 16; // ESP32S3 default
+  uint32_t      serialmonitor_baud = 9600; // Default baud rate
+  uint8_t       serialmonitor_databits = 8; // Default data bits
+  uint8_t       serialmonitor_stopbits = 1; // Default stop bits
+  uint8_t       serialmonitor_parity = 0; // Default parity (0=None, 1=Odd, 2=Even)
+  
+  // Yazıcı Serial ayarları
+  uint8_t       printer_port = 5; // Default Serial2 (ESPEasySerialPort::serial2)
+  int8_t        printer_rxpin = 17; // ESP32S3 default
+  int8_t        printer_txpin = 18; // ESP32S3 default
+  uint32_t      printer_baud = 9600; // Default baud rate
+  uint8_t       printer_databits = 8; // Default data bits
+  uint8_t       printer_stopbits = 1; // Default stop bits
+  uint8_t       printer_parity = 0; // Default parity (0=None, 1=Odd, 2=Even)
+  
   // Try to extend settings to make the checksum 4-uint8_t aligned.
 };
 
