@@ -1,0 +1,19 @@
+Processing custom_ESP32_4M316k_LittleFS (board: esp32_4M; platform: https://github.com/Jason2866/platform-espressif32.git#Arduino/IDF54; framework: arduino)
+--------------------------------------------------------------------------------
+Tool Manager: Installing file:///home/runner/work/ENFi32_17102025_APPproje/ENFi32_17102025_APPproje/.platformio/tools/tool-esptoolpy
+Tool Manager: tool-esptoolpy@5.1.0 has been installed!
+Tool Manager: Installing file:///home/runner/work/ENFi32_17102025_APPproje/ENFi32_17102025_APPproje/.platformio/tools/toolchain-xtensa-esp-elf
+Tool Manager: toolchain-xtensa-esp-elf@14.2.0+20250730 has been installed!
+Tool Manager: Installing file:///home/runner/work/ENFi32_17102025_APPproje/ENFi32_17102025_APPproje/.platformio/tools/tool-mklittlefs
+Tool Manager: tool-mklittlefs@3.2.0 has been installed!
+Tool Manager: Installing https://github.com/pioarduino/registry/releases/download/0.0.1/xtensa-esp-elf-14.2.0_20250730.zip
+Unpacking 0% 10% 20%
+Tool Manager: toolchain-xtensa-esp-elf@14.2.0+20250730 has been installed!
+Tool Manager: Installing https://github.com/pioarduino/registry/releases/download/0.0.1/esptoolpy-v5.1.0.zip
+Unpacking 0% 10% 20%
+Tool Manager: tool-esptoolpy@5.1.0 has been installed!
+Tool Manager: Installing https://github.com/pioarduino/registry/releases/download/0.0.1/mklittlefs-3.2.0-new.zip
+Unpacking 0% 10% 20%
+Tool Manager: tool-mklittlefs@3.2.0 has been installed!
+Library Manager: Installing crankyoldgit/IRremoteESP8266 @ ~2.8.4
+HTTPClientError: 
