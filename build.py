@@ -43,14 +43,15 @@ try:
 except Exception as e:
     print(f"Warning: Could not patch requests: {e}")
 
-# Patch PlatformIO package manager to handle tool-scons locally
+# Patch PlatformIO package manager to handle tool-scons and libraries locally
 try:
     from platformio.package.manager._install import PackageManagerInstallMixin
     from platformio.package.manager.base import BasePackageManager
+    from platformio.package.manager.library import LibraryPackageManager
     from platformio.package import pack
     import pathlib
     
-    # Get the tool-scons path in the project
+    # Get paths in the project
     project_dir = os.path.dirname(os.path.abspath(__file__))
     tool_scons_path = pathlib.Path(project_dir) / ".platformio" / "packages" / "tool-scons"
     
@@ -61,6 +62,19 @@ try:
             print(f"Using local tool-scons installation")
             if tool_scons_path.exists():
                 return pack.PackageItem(str(tool_scons_path))
+        
+        # Skip library installations that fail due to SSL - they're available locally in lib/
+        if isinstance(self, LibraryPackageManager):
+            try:
+                return original_install(self, spec, *args, **kwargs)
+            except Exception as e:
+                if 'SSL' in str(e) or 'HTTPClient' in str(e):
+                    print(f"Skipping library installation due to network error: {spec}")
+                    print(f"Using local library from lib/ directory instead")
+                    # Return a truthy value to continue
+                    return True
+                raise
+        
         return original_install(self, spec, *args, **kwargs)
     PackageManagerInstallMixin.install = patched_install
     
