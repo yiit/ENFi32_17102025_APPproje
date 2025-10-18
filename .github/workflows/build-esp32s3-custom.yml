@@ -1,0 +1,93 @@
+name: Build ESP32s3 Custom Environment
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'dist/Release_notes.txt'
+  pull_request:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: esp32s3-custom-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-custom-esp32s3:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORMIO_ENV: custom_ESP32s3_16M8M_LittleFS_OPI_PSRAM_ETH
+      PLATFORMIO_CORE_DIR: .platformio
+      PLATFORMIO_BUILD_CACHE_DIR: .cache
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            .platformio
+            .cache
+          key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio*.ini', 'requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pio-
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binutils build-essential libffi-dev libgit2-dev
+      
+      - name: Install Python dependencies
+        run: |
+          pip install uv
+          uv pip install --system -r requirements.txt
+      
+      - name: Update PlatformIO packages for environment
+        run: |
+          pio pkg update -e ${{ env.PLATFORMIO_ENV }}
+      
+      - name: Get current date
+        id: date
+        run: |
+          echo "builddate=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      
+      - name: Build firmware
+        run: |
+          platformio run -e ${{ env.PLATFORMIO_ENV }}
+      
+      - name: List build output
+        run: |
+          echo "=== Build output directory structure ==="
+          find .pio/build/${{ env.PLATFORMIO_ENV }} -type f \( -name "*.bin" -o -name "*.elf" \) 2>/dev/null || true
+          echo ""
+          echo "=== build_output directory ==="
+          find build_output -type f 2>/dev/null || echo "No build_output directory"
+      
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ env.PLATFORMIO_ENV }}-${{ steps.date.outputs.builddate }}-${{ github.run_id }}
+          path: |
+            .pio/build/${{ env.PLATFORMIO_ENV }}/*.bin
+            .pio/build/${{ env.PLATFORMIO_ENV }}/*.bin.gz
+            .pio/build/${{ env.PLATFORMIO_ENV }}/*.elf
+            .pio/build/${{ env.PLATFORMIO_ENV }}/*.factory.bin
+            build_output/bin/**
+            build_output/debug/**
+            build_output/json/**
+          if-no-files-found: warn
+          retention-days: 30
