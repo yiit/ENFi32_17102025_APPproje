@@ -54,28 +54,33 @@ Bu proje, ESPEasy tabanlı gelişmiş ESP32 IoT firmware'i için özel yapıland
 
 ## 🚀 Kurulum
 
-### Gereksinimler
-- PlatformIO Core 6.0+
-- Git
-- ESP32 Development Board
+### ✅ PlatformIO ile Derleme
+Bu proje **PlatformIO ile derlenmeye hazırdır**. Tüm konfigürasyon dosyaları mevcuttur.
 
-### Adımlar
+> **📖 Detaylı Derleme Kılavuzu:** [`BUILD_GUIDE.md`](BUILD_GUIDE.md) dosyasına bakın!
+
+### Hızlı Başlangıç
+
+#### PlatformIO IDE ile (Önerilen)
+1. VS Code + PlatformIO IDE yükleyin
+2. Projeyi açın
+3. Build butonuna tıklayın
+4. Upload butonuna tıklayın
+
+#### Komut Satırı ile
 ```bash
 # Repository'yi klonlayın
 git clone [repository-url]
 cd ENFi32_17102025_APPproje
 
-# PlatformIO dependencies yükleyin
-pio pkg install
+# PlatformIO ile derleyin (varsayılan ortam)
+pio run
 
-# ESP32 için build edin
+# Belirli bir ortam için
 pio run -e custom_ESP32_4M316k_LittleFS
 
-# ESP32-S3 için build edin  
-pio run -e custom_ESP32s3_16M8M_LittleFS_OPI_PSRAM_ETH
-
-# Upload edin
-pio run -e [environment] --target upload
+# Derleme ve yükleme
+pio run -e custom_ESP32_4M316k_LittleFS --target upload
 ```
 
 ## ⚙️ Konfigürasyon
