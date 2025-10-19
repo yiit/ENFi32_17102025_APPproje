@@ -13,10 +13,12 @@
 
 // Performing a 2-stage define assignment using the _TMP defines
 // See: https://github.com/letscontrolit/ESPEasy/issues/2621
+#ifndef TASKS_MAX_TMP
 #if FEATURE_NON_STANDARD_24_TASKS
-  #define TASKS_MAX_TMP                      24
+  #define TASKS_MAX_TMP                      12  // ÖZEL: ENFi32 - 24 yerine 12 task yeterli (hafıza optimizasyonu)
 #else
-  #define TASKS_MAX_TMP                      12
+  #define TASKS_MAX_TMP                      4   // ÖZEL: ENFi32 - Minimal task sayısı
+#endif
 #endif
 
 
@@ -30,7 +32,7 @@
 #endif
 #if defined(ESP32)
   #ifndef TASKS_MAX
-    #define TASKS_MAX                          32
+    #define TASKS_MAX                          TASKS_MAX_TMP // ÖZEL: Default 32 yerine TASKS_MAX_TMP kullanılıyor - ENFi32 RTC overflow çözümü
   #endif
 
   #ifndef MAX_GPIO
@@ -45,28 +47,28 @@
 #endif
 
 #ifndef CONTROLLER_MAX
-  #define CONTROLLER_MAX                      3 // max 4!
+  #define CONTROLLER_MAX                      1 // ÖZEL: Default 3'ten 1'e düşürüldü - ENFi32 projesi hafıza optimizasyonu
 #endif
 #ifndef NOTIFICATION_MAX
-  #define NOTIFICATION_MAX                    3 // max 4!
+  #define NOTIFICATION_MAX                    1 // ÖZEL: Default 3'ten 1'e düşürüldü - ENFi32 projesi hafıza optimizasyonu  
 #endif
 #ifndef VARS_PER_TASK
-  #define VARS_PER_TASK                       4
+  #define VARS_PER_TASK                       32 // ÖZEL: Default 4'ten 32'ye artırıldı - ENFi32 P120 plugin 32 değişken gereksinimi
 #endif
 #ifndef PLUGIN_CONFIGVAR_MAX
-  #define PLUGIN_CONFIGVAR_MAX                8
+  #define PLUGIN_CONFIGVAR_MAX                16  // HAFIZA TASARRUFU - 4'ten 16'ya artırıldı
 #endif
 #ifndef PLUGIN_CONFIGFLOATVAR_MAX
-  #define PLUGIN_CONFIGFLOATVAR_MAX           4
+  #define PLUGIN_CONFIGFLOATVAR_MAX           16  // HAFIZA TASARRUFU - 2'den 16'ya artırıldı  
 #endif
 #ifndef PLUGIN_CONFIGLONGVAR_MAX
-  #define PLUGIN_CONFIGLONGVAR_MAX            4
+  #define PLUGIN_CONFIGLONGVAR_MAX            16  // HAFIZA TASARRUFU - 2'den 16'ya artırıldı
 #endif
 #ifndef PLUGIN_EXTRACONFIGVAR_MAX
   #define PLUGIN_EXTRACONFIGVAR_MAX          16
 #endif
 #ifndef NAME_FORMULA_LENGTH_MAX
-  #define NAME_FORMULA_LENGTH_MAX            40
+  #define NAME_FORMULA_LENGTH_MAX            8  // HAFIZA TASARRUFU - Formül karakter sayısı
 #endif
 
 #define USERVAR_MAX_INDEX    (VARS_PER_TASK * TASKS_MAX)

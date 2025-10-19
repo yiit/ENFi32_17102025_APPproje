@@ -35,7 +35,6 @@
 #include "../Helpers/StringGenerator_System.h"
 #include "../WebServer/ESPEasy_WebServer.h"
 
-
 #ifdef USE_RTOS_MULTITASKING
 # include "../Helpers/Networking.h"
 # include "../Helpers/PeriodicalActions.h"
@@ -639,7 +638,6 @@ void ESPEasy_setup()
   #ifndef BUILD_NO_RAM_TRACKER
   logMemUsageAfter(F("setWebserverRunning()"));
   #endif // ifndef BUILD_NO_RAM_TRACKER
-
 
   #if FEATURE_REPORTING
   ReportStatus();

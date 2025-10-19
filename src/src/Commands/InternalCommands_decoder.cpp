@@ -81,6 +81,13 @@ const char Internal_commands_e[] PROGMEM =
 #define Int_cmd_fghij_offset ESPEasy_cmd_e::factoryreset
 const char Internal_commands_fghij[] PROGMEM =
   "factoryreset|"
+#ifdef USES_P120
+  "fyzart|"
+  "fyzkop|"
+  "fyztop|"
+  "fyzurunart|"
+  "fyzuruntek|"
+#endif // ifdef USES_P120
   "gateway|"
   "gpio|"
   "gpiotoggle|"

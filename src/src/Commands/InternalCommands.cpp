@@ -45,6 +45,10 @@
 #include "../Commands/wd.h"
 #include "../Commands/WiFi.h"
 
+#ifdef USES_P120
+# include "../Commands/P120.h"
+#endif // ifdef USES_P120
+
 #include "../DataStructs/TimingStats.h"
 
 #include "../ESPEasyCore/ESPEasy_Log.h"
@@ -306,6 +310,13 @@ bool InternalCommands::executeInternalCommand()
     case ESPEasy_cmd_e::event:                      COMMAND_CASE_A(Command_Rules_Events,  -1);               // Rule.h
     case ESPEasy_cmd_e::executerules:               COMMAND_CASE_A(Command_Rules_Execute, -1);               // Rule.h
     case ESPEasy_cmd_e::factoryreset:               COMMAND_CASE_R(Command_Settings_FactoryReset, 0);        // Settings.h
+#ifdef USES_P120
+    case ESPEasy_cmd_e::fyzart:                     COMMAND_CASE_R(do_command_fyzart,        0);            // P120.h
+    case ESPEasy_cmd_e::fyzkop:                     COMMAND_CASE_R(do_command_fyzkop,        0);            // P120.h
+    case ESPEasy_cmd_e::fyztop:                     COMMAND_CASE_R(do_command_fyztop,        0);            // P120.h
+    case ESPEasy_cmd_e::fyzurunart:                 COMMAND_CASE_R(do_command_fyzurunart,   -1);            // P120.h
+    case ESPEasy_cmd_e::fyzuruntek:                 COMMAND_CASE_R(do_command_fyzuruntek,   -1);            // P120.h
+#endif // ifdef USES_P120
     case ESPEasy_cmd_e::gateway:                    COMMAND_CASE_R(Command_Gateway,     1);                  // Network Command
     case ESPEasy_cmd_e::gpio:                       COMMAND_CASE_A(Command_GPIO,        2);                  // Gpio.h
     case ESPEasy_cmd_e::gpiotoggle:                 COMMAND_CASE_A(Command_GPIO_Toggle, 1);                  // Gpio.h

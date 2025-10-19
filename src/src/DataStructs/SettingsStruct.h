@@ -459,7 +459,13 @@ public:
   int8_t        I2C3_Multiplexer_Type = I2C_MULTIPLEXER_NONE;
   int8_t        I2C3_Multiplexer_Addr = -1;
   int8_t        I2C3_Multiplexer_ResetPin = -1;
+  // ÖZEL: ENFi32 - N_TASKS=4 için N_TASKS-7=-3 negatif oluyor, güvenli boyut kullanıyoruz
+#if N_TASKS > 7
   unsigned int  OLD_TaskDeviceID[N_TASKS - 7] = {0};  //UNUSED: this can be reused
+#else
+  // ENFi32: N_TASKS=4 için array boyutu 0 veya minimum 1 eleman
+  unsigned int  OLD_TaskDeviceID[1] = {0};  //UNUSED: this can be reused - ENFi32 minimal array
+#endif
 
   // FIXME TD-er: When used on ESP8266, this conversion union may not work
   // It might work as it is 32-bit in size.
@@ -644,6 +650,13 @@ public:
   uint8_t       printer_databits = 8; // Default data bits
   uint8_t       printer_stopbits = 1; // Default stop bits
   uint8_t       printer_parity = 0; // Default parity (0=None, 1=Odd, 2=Even)
+  
+  // P120 FYZ Yazıcı PRN Dosya Ayarları
+  char          urun_tek_prn[32] = {0};    // Tek ürün PRN dosyası
+  char          urun_art_prn[32] = {0};    // Artı ürün PRN dosyası  
+  char          urun_top_prn[32] = {0};    // Toplam PRN dosyası
+  char          urun_ek_prn[32] = {0};     // Ek PRN dosyası
+  char          sd_prn[32] = {0};          // SD data PRN dosyası
   
   // Try to extend settings to make the checksum 4-uint8_t aligned.
 };

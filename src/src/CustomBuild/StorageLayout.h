@@ -71,10 +71,10 @@
 
 
 #ifndef DAT_TASKS_SIZE
-# define DAT_TASKS_SIZE                   1024
+# define DAT_TASKS_SIZE                   2048  // ÖZEL: Default 1024'ten 2048'e artırıldı - ENFi32 VARS_PER_TASK=32 için ExtraTaskSettingsStruct boyut uyumu (1228 bytes)
 #endif // ifndef DAT_TASKS_SIZE
 #ifndef DAT_TASKS_CUSTOM_OFFSET
-# define DAT_TASKS_CUSTOM_OFFSET          1024 // Equal to DAT_TASKS_SIZE
+# define DAT_TASKS_CUSTOM_OFFSET          2048 // ÖZEL: DAT_TASKS_SIZE ile eşitlenerek 2048 yapıldı - ENFi32 uyumu için
 #endif // ifndef DAT_TASKS_CUSTOM_OFFSET
 #ifndef DAT_TASKS_CUSTOM_SIZE
 # define DAT_TASKS_CUSTOM_SIZE            1024

@@ -98,4 +98,6 @@ extern bool firstLoop;
 // Even if this setting is changed, you need to reboot to activate the changes.
 extern boolean UseRTOSMultitasking;
 
+// ESPEasy-Globals.h temizlendi - P120 değişkenleri PluginStruct'a taşındı
+
 #endif /* ESPEASY_GLOBALS_H_ */

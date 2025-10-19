@@ -242,6 +242,14 @@ enum class ESPEasy_cmd_e : uint8_t {
   wdread,
 #endif // ifndef LIMIT_BUILD_SIZE
 
+#ifdef USES_P120
+  fyzart,
+  fyztop,
+  fyzkop,
+  fyzuruntek,
+  fyzurunart,
+#endif // ifdef USES_P120
+
 
   NotMatched  // Keep as last one
 };

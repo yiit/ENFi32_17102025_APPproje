@@ -302,6 +302,7 @@ void WebServerInit()
   web_server.on(F("/file_download"), handle_file_download);    // Download PRN file
   web_server.on(F("/file_upload"),  HTTP_GET,  handle_file_upload);      // Upload PRN file form
   web_server.on(F("/file_upload"),  HTTP_POST, handle_file_upload_post, handleFileUploadPRN); // Upload PRN file handler
+
 #endif // ifdef WEBSERVER_SETUP
 #ifdef WEBSERVER_SYSINFO
   web_server.on(F("/sysinfo"),     handle_sysinfo);
