@@ -174,6 +174,10 @@ void WiFiEventData_t::setWiFiServicesInitialized() {
     dns0_cache = WiFi.dnsIP(0);
     dns1_cache = WiFi.dnsIP(1);
 
+    // ENFi32: WiFi bağlantısı başarılı - adaptive timer'ları sıfırla
+    resetAdaptiveTimers();
+    addLog(LOG_LEVEL_INFO, F("ENFi32: WiFi connection successful - adaptive timers reset"));
+
 #if FEATURE_ESPEASY_P2P
     updateUDPport(false);
 #endif  

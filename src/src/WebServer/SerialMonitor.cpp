@@ -126,9 +126,10 @@ String formatCharacter(char c, DisplayMode mode, int index = -1, bool isLast = f
         if (isLast) result += "<div class='last-byte'>son byte</div>";
         result += String(c) + "<br><small>" + String((int)c) + "</small></span>";
       } else {
-        // Kontrol karakterleri için isimler
+        // Kontrol karakterleri için isimler - char cast ile güvenli karşılaştırma
         String charName = "";
-        switch(c) {
+        uint8_t byteValue = (uint8_t)c;
+        switch(byteValue) {
           case 0:   charName = "NUL"; break;
           case 1:   charName = "SOH"; break;
           case 2:   charName = "STX"; break;
@@ -139,10 +140,10 @@ String formatCharacter(char c, DisplayMode mode, int index = -1, bool isLast = f
           case 7:   charName = "BEL"; break;
           case 8:   charName = "BS"; break;
           case 9:   charName = "TAB"; break;
-          case 10:  charName = "LF"; break;
+          case 10:  charName = "LF"; break;   // Line Feed - \n
           case 11:  charName = "VT"; break;
           case 12:  charName = "FF"; break;
-          case 13:  charName = "CR"; break;
+          case 13:  charName = "CR"; break;   // Carriage Return - \r
           case 14:  charName = "SO"; break;
           case 15:  charName = "SI"; break;
           case 16:  charName = "DLE"; break;
@@ -162,13 +163,16 @@ String formatCharacter(char c, DisplayMode mode, int index = -1, bool isLast = f
           case 30:  charName = "RS"; break;
           case 31:  charName = "US"; break;
           case 127: charName = "DEL"; break;
-          default:  charName = "[" + String((int)c) + "]"; break;
+          default:  
+            // Bilinmeyen kontrol karakterleri için [sayı] formatı
+            charName = "[" + String(byteValue) + "]"; 
+            break;
         }
         
         result = "<span class='char-box special'>";
         if (index >= 0) result += "<div class='char-index'>" + String(index) + "</div>";
         if (isLast) result += "<div class='last-byte'>son byte</div>";
-        result += charName + "<br><small>" + String((int)c) + "</small></span>";
+        result += charName + "<br><small>(" + String(byteValue) + ")</small></span>";
       }
       break;
   }
@@ -180,6 +184,8 @@ void addSerialLog(const String& data) {
   String timestamp = String(millis() / 1000) + "s";
   String logEntry = "";
   
+  // Debug log kaldırıldı - performans için
+  
   // Karakter sayısı bilgisi
   logEntry += "<div class='log-header-info'>" + timestamp + " - " + String(data.length()) + " bytes</div>";
   logEntry += "<div class='char-container'>";
@@ -187,7 +193,8 @@ void addSerialLog(const String& data) {
   // Her karakteri formatla
   for (int i = 0; i < data.length(); i++) {
     bool isLastChar = (i == data.length() - 1);
-    logEntry += formatCharacter(data.charAt(i), currentDisplayMode, i + 1, isLastChar);
+    char currentChar = data.charAt(i);
+    logEntry += formatCharacter(currentChar, currentDisplayMode, i + 1, isLastChar);
   }
   
   logEntry += "</div>";
@@ -196,54 +203,73 @@ void addSerialLog(const String& data) {
   serialLogIndex = (serialLogIndex + 1) % MAX_SERIAL_LOGS;
   totalSerialLogs++;
   
-  // ESPEasy log'a da ekle
-  String logMsg = String(F("Serial1 RX: ")) + data;
+  // ESPEasy log'a da ekle - sadece printable karakterler
+  String cleanData = "";
+  for (int i = 0; i < data.length(); i++) {
+    char c = data.charAt(i);
+    if (c >= 32 && c <= 126) {
+      cleanData += c;
+    } else {
+      cleanData += "[" + String((uint8_t)c) + "]";
+    }
+  }
+  String logMsg = String(F("Serial1 RX: ")) + cleanData;
   addLog(LOG_LEVEL_DEBUG, logMsg);
 }
 
-// Basit serial data işleme
+// Temizlenmiş serial data işleme - CR/LF kombinasyonu düzeltildi
 void processSerialData() {
   if (!serialMonitorActive || !currentSerial) return;
   
-  // Timeout kontrolü - 500ms boyunca yeni karakter gelmezse paketi gönder
+  // Timeout kontrolü - 100ms boyunca yeni karakter gelmezse paketi gönder
   uint32_t currentTime = millis();
-  if (serialBuffer.length() > 0 && (currentTime - lastCharTime) > charTimeout) {
+  if (serialBuffer.length() > 0 && (currentTime - lastCharTime) > 100) {
     addSerialLog(serialBuffer);
     serialBuffer = "";
   }
+  
+  // Statik değişkenler - CR beklemede mi?
+  static bool expectingLF = false;
+  static uint32_t crTime = 0;
   
   while (currentSerial->available()) {
     char c = currentSerial->read();
     lastCharTime = currentTime;
     
-    // Her karakteri buffer'a ekle
-    serialBuffer += c;
-    
-    // CR+LF kombinasyonunu kontrol et
-    if (c == '\n') {
-      // LF geldi, paketi gönder (CR zaten buffer'da varsa birlikte gider)
-      if (serialBuffer.length() > 0) {
-        addSerialLog(serialBuffer);
-      }
-      serialBuffer = "";
-    } else if (c == '\r') {
-      // CR geldi, bir sonraki karakterin LF olup olmadığını kontrol etmek için bekle
-      // Eğer 10ms içinde LF gelmezse paketi gönder
-      delay(10);
-      if (currentSerial->available() && currentSerial->peek() == '\n') {
-        // Sonraki karakter LF, onu da ekle
-        serialBuffer += currentSerial->read();
+    // CR bekleme durumu kontrolü
+    if (expectingLF) {
+      if (c == '\n' && (currentTime - crTime) < 50) {
+        // CR+LF kombinasyonu tamamlandı
+        serialBuffer += c;
+        expectingLF = false;
         addSerialLog(serialBuffer);
         serialBuffer = "";
+        continue;
       } else {
-        // LF gelmedi, sadece CR ile paketi gönder
-        addSerialLog(serialBuffer);
-        serialBuffer = "";
+        // CR'den sonra LF gelmedi veya çok geç geldi, önceki paketi gönder
+        expectingLF = false;
+        if (!serialBuffer.isEmpty()) {
+          addSerialLog(serialBuffer);
+          serialBuffer = "";
+        }
+        // Şu anki karakteri yeni pakete ekle (aşağıda eklenir)
       }
     }
     
-    // Çok uzun paket kontrolü
-    if (serialBuffer.length() > 200) {
+    // Karakteri buffer'a ekle
+    serialBuffer += c;
+    
+    // Paket bitiş durumları
+    if (c == '\n') {
+      // LF geldi, paketi hemen gönder
+      addSerialLog(serialBuffer);
+      serialBuffer = "";
+    } else if (c == '\r') {
+      // CR geldi, LF bekle
+      expectingLF = true;
+      crTime = currentTime;
+    } else if (serialBuffer.length() >= 200) {
+      // Çok uzun paket, zorla gönder
       addSerialLog(serialBuffer);
       serialBuffer = "";
     }
@@ -371,11 +397,33 @@ void sendToPrinterLn(const String& data) {
   }
 }
 
+void testPrinterSerial() {
+  if (printerSerial) {
+    printerSerial->println(F("=== Printer Serial Test ==="));
+    printerSerial->println(F("Test mesajı gönderiliyor..."));
+    printerSerial->print(F("Saat: "));
+    printerSerial->print(millis() / 1000);
+    printerSerial->println(F(" saniye"));
+    printerSerial->println(F("========================"));
+    addLog(LOG_LEVEL_INFO, F("Test mesajı Printer Serial'e gönderildi"));
+  } else {
+    addLog(LOG_LEVEL_ERROR, F("Printer Serial aktif değil - test başarısız"));
+  }
+}
+
 // Boot sırasında Yazıcı Serial'i başlat
 void initPrinterSerialOnBoot() {
   // Sadece geçerli pinler varsa başlat
   if (Settings.printer_rxpin >= 0 && Settings.printer_txpin >= 0) {
     initializePrinterSerial();
+    
+    // Başlangıç mesajını direkt printer serial'e gönder
+    if (printerSerial) {
+      delay(200); // Serial tamamen başlaması için bekle
+      printerSerial->println(F("Printer Start"));
+      printerSerial->println(F("ESPEasy Ready"));
+    }
+    
     addLog(LOG_LEVEL_INFO, F("Printer Serial initialized on boot"));
   }
 }

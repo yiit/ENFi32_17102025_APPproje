@@ -484,6 +484,12 @@ void AttemptWiFiConnect() {
     if (!WiFiEventData.last_wifi_connect_attempt_moment.timeoutReached(adaptiveTimeout)) {
       return;
     }
+  } else {
+    // ENFi32: İlk WiFi bağlantı deneme - adaptive timer başlat
+    if (!WiFiEventData.firstConnectionFailure.isSet()) {
+      WiFiEventData.firstConnectionFailure.setNow();
+      addLog(LOG_LEVEL_INFO, F("ENFi32: Started adaptive WiFi timer - AP mode will activate in 2 minutes if connection fails"));
+    }
   }
 
   // ENFi32: Check if STA should be disabled (15 dakika sonra)

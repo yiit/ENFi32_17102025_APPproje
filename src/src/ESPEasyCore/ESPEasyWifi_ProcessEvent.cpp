@@ -182,6 +182,7 @@ void handle_unprocessedNetworkEvents()
 
     if (!WiFiEventData.processedConnectAPmode) { processConnectAPmode(); }
 
+
     if (WiFiEventData.timerAPoff.isSet()) { processDisableAPmode(); }
 
     if (!WiFiEventData.processedScanDone) { processScanDone(); }

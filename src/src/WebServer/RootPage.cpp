@@ -139,9 +139,10 @@ void handle_root() {
       printToWebJSON = false;
     }
 
+    addHtml(F("<div class='card'>"));
+    addHtml(F("<div class='card-header'>System Information</div>"));
     addHtml(F("<form>"));
     html_table_class_normal();
-    addFormHeader(F("System Info"));
 
     addRowLabelValue(LabelType::UNIT_NR);
     addRowLabelValue(LabelType::GIT_BUILD);
@@ -158,7 +159,9 @@ void handle_root() {
 
     addRowLabel(LabelType::UPTIME);
     {
+      addHtml(F("<span data-uptime>"));
       addHtml(getExtendedValue(LabelType::UPTIME));
+      addHtml(F("</span>"));
     }
     addRowLabel(LabelType::LOAD_PCT);
 
@@ -175,7 +178,9 @@ void handle_root() {
 #endif
     {
       addRowLabel(LabelType::FREE_MEM);
+      addHtml(F("<span data-memory>"));
       addHtmlInt(freeMem);
+      addHtml(F("</span>"));
       addUnit(getFormUnit(LabelType::FREE_MEM));
 # ifndef BUILD_NO_RAM_TRACKER
       addHtml(strformat(
@@ -215,10 +220,17 @@ void handle_root() {
       }
 #endif
       addRowLabel(LabelType::WIFI_RSSI);
+      addHtml(F("<span id='wifi-status' data-wifi-status='connected'>"));
       addHtml(strformat(
         F("%d [dBm] (%s)"),
         WiFi.RSSI(),
         WiFi.SSID().c_str()));
+      addHtml(F("</span>"));
+    }
+    else
+    {
+      addRowLabel(F("WiFi Status"));
+      addHtml(F("<span id='wifi-status' data-wifi-status='disconnected'>Disconnected</span>"));
     }
 
   # if FEATURE_ETHERNET
@@ -285,13 +297,15 @@ void handle_root() {
       }
     }
     html_end_table();
+    addHtml(F("</form></div>")); // Close card div
 
     # if FEATURE_ESPEASY_P2P
     html_BR();
 
     if ((Settings.Unit == 0) &&
         (Settings.UDPPort != 0)) { addFormNote(F("Warning: Unit number is 0, please change it if you want to send data to other units.")); }
-    html_BR();
+    addHtml(F("<div class='card'>"));
+    addHtml(F("<div class='card-header'>Network Nodes</div>"));
     html_table_class_multirow_noborder();
     html_TR();
     html_table_header(F("Node List"));
@@ -464,6 +478,7 @@ void handle_root() {
     }
 
     html_end_table();
+    addHtml(F("</div>")); // Close Node List card
   # endif // if FEATURE_ESPEASY_P2P
     html_end_form();
 

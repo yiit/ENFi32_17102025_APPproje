@@ -18,6 +18,7 @@ ESPeasySerial* getPrinterSerial();
 bool isPrinterSerialActive();
 void sendToPrinter(const String& data);
 void sendToPrinterLn(const String& data);
+void testPrinterSerial();
 
 // Global serial variables
 extern String serialBuffer;

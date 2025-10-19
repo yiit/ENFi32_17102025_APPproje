@@ -52,8 +52,9 @@ void handle_hardware() {
   };
   const int serialPortValues[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
+  String error;  // Ana error değişkeni
+  
   if (isFormItem(F("pled"))) {
-    String error;
     Settings.Pin_status_led           = getFormItemInt(F("pled"));
     Settings.Pin_status_led_Inversed  = isFormItemChecked(F("pledi"));
     Settings.Pin_Reset                = getFormItemInt(F("pres"));
@@ -146,25 +147,31 @@ void handle_hardware() {
 #endif
     Settings.NetworkMedium            = static_cast<NetworkMedium_t>(getFormItemInt(F("ethwifi")));
     #endif // if FEATURE_ETHERNET
-    
-    // Serial Monitor ayarları
-    Settings.serialmonitor_port     = getFormItemInt(F("serialmonport"));
-    Settings.serialmonitor_rxpin    = getFormItemInt(F("serialmonrx"));
-    Settings.serialmonitor_txpin    = getFormItemInt(F("serialmontx"));
-    Settings.serialmonitor_baud     = getFormItemInt(F("serialmonbaud"));
-    Settings.serialmonitor_databits = getFormItemInt(F("serialmondatabits"));
-    Settings.serialmonitor_stopbits = getFormItemInt(F("serialmonstopbits"));
-    Settings.serialmonitor_parity   = getFormItemInt(F("serialmonparity"));
-    
-    // Yazıcı Serial ayarları
-    Settings.printer_port     = getFormItemInt(F("printerport"));
-    Settings.printer_rxpin    = getFormItemInt(F("printerrx"));
-    Settings.printer_txpin    = getFormItemInt(F("printertx"));
-    Settings.printer_baud     = getFormItemInt(F("printerbaud"));
-    Settings.printer_databits = getFormItemInt(F("printerdatabits"));
-    Settings.printer_stopbits = getFormItemInt(F("printerstopbits"));
-    Settings.printer_parity   = getFormItemInt(F("printerparity"));
-    
+  }
+
+  // Serial Monitor ayarları - Mevcut değerleri koruyarak güncelle
+  if (hasArg(F("serialmonport"))) {
+    Settings.serialmonitor_port     = getFormItemInt(F("serialmonport"), Settings.serialmonitor_port);
+    Settings.serialmonitor_rxpin    = getFormItemInt(F("serialmonrx"), Settings.serialmonitor_rxpin);
+    Settings.serialmonitor_txpin    = getFormItemInt(F("serialmontx"), Settings.serialmonitor_txpin);
+    Settings.serialmonitor_baud     = getFormItemInt(F("serialmonbaud"), Settings.serialmonitor_baud);
+    Settings.serialmonitor_databits = getFormItemInt(F("serialmondatabits"), Settings.serialmonitor_databits);
+    Settings.serialmonitor_stopbits = getFormItemInt(F("serialmonstopbits"), Settings.serialmonitor_stopbits);
+    Settings.serialmonitor_parity   = getFormItemInt(F("serialmonparity"), Settings.serialmonitor_parity);
+  }
+  
+  // Yazıcı Serial ayarları - Mevcut değerleri koruyarak güncelle
+  if (hasArg(F("printerport"))) {
+    Settings.printer_port     = getFormItemInt(F("printerport"), Settings.printer_port);
+    Settings.printer_rxpin    = getFormItemInt(F("printerrx"), Settings.printer_rxpin);
+    Settings.printer_txpin    = getFormItemInt(F("printertx"), Settings.printer_txpin);
+    Settings.printer_baud     = getFormItemInt(F("printerbaud"), Settings.printer_baud);
+    Settings.printer_databits = getFormItemInt(F("printerdatabits"), Settings.printer_databits);
+    Settings.printer_stopbits = getFormItemInt(F("printerstopbits"), Settings.printer_stopbits);  
+    Settings.printer_parity   = getFormItemInt(F("printerparity"), Settings.printer_parity);
+  }
+
+  if (isFormItem(F("pled"))) {
     int gpio = 0;
 
     while (gpio <= MAX_GPIO) {

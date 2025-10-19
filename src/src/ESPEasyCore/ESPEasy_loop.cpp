@@ -172,6 +172,12 @@ void ESPEasy_loop()
   // Calls above may have received/generated commands for the command queue, thus need to process them.
   processExecuteCommandQueue();
   
+  // Process serial monitor data if active
+  #ifdef WEBSERVER_SETUP
+  extern void processSerialData();
+  processSerialData();
+  #endif
+  
   backgroundtasks();
 
   if (readyForSleep()) {
