@@ -30,6 +30,7 @@
 #include "../WebServer/SettingsArchive.h"
 #include "../WebServer/SetupPage.h"
 #include "../WebServer/SerialMonitor.h"  // YENİ EKLEME
+#include "../WebServer/FileManager.h"    // File System Manager
 #include "../WebServer/EnhancedSetupPage.h"
 #include "../WebServer/SysInfoPage.h"
 #include "../WebServer/Metrics.h"
@@ -293,6 +294,14 @@ void WebServerInit()
   web_server.on(F("/setup"),       handle_setup);
   web_server.on(F("/setup_enhanced"), handle_enhanced_setup);
   web_server.on(F("/serialmonitor"), handle_serial_monitor);    // BASIT VERSİYON
+  web_server.on(F("/file_manager"), handle_file_manager);      // File System Manager
+  web_server.on(F("/file_edit"),    handle_file_edit);         // Edit PRN files
+  web_server.on(F("/file_create"),  handle_file_create);       // Create new PRN file
+  web_server.on(F("/file_copy"),    handle_file_copy);         // Copy PRN file
+  web_server.on(F("/file_delete"),  handle_file_delete);       // Delete PRN file
+  web_server.on(F("/file_download"), handle_file_download);    // Download PRN file
+  web_server.on(F("/file_upload"),  HTTP_GET,  handle_file_upload);      // Upload PRN file form
+  web_server.on(F("/file_upload"),  HTTP_POST, handle_file_upload_post, handleFileUploadPRN); // Upload PRN file handler
 #endif // ifdef WEBSERVER_SETUP
 #ifdef WEBSERVER_SYSINFO
   web_server.on(F("/sysinfo"),     handle_sysinfo);

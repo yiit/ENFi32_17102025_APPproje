@@ -433,7 +433,7 @@ void handle_serial_monitor() {
     return;
   }
 
-  navMenuIndex = MENU_INDEX_TOOLS;
+  navMenuIndex = MENU_INDEX_SERIAL;
   TXBuffer.startStream();
   sendHeadandTail_stdtemplate(_HEAD);
 

@@ -98,6 +98,8 @@ const __FlashStringHelper* getGpMenuIcon(uint8_t index) {
     case MENU_INDEX_RULES: return F("&#10740;");
     case MENU_INDEX_NOTIFICATIONS: return F("&#9993;");
     case MENU_INDEX_TOOLS: return F("&#128295;");
+    case MENU_INDEX_SERIAL: return F("&#128187;");
+    case MENU_INDEX_FILES: return F("&#128193;");
   }
   return F("");
 }
@@ -112,6 +114,8 @@ const __FlashStringHelper* getGpMenuLabel(uint8_t index) {
     case MENU_INDEX_RULES: return F("Rules");
     case MENU_INDEX_NOTIFICATIONS: return F("Notifications");
     case MENU_INDEX_TOOLS: return F("Tools");
+    case MENU_INDEX_SERIAL: return F("Seri Monitor");
+    case MENU_INDEX_FILES: return F("Dosya Sistemi");
   }
   return F("");
 }
@@ -126,6 +130,8 @@ const __FlashStringHelper* getGpMenuURL(uint8_t index) {
     case MENU_INDEX_RULES: return F("/rules");
     case MENU_INDEX_NOTIFICATIONS: return F("/notifications");
     case MENU_INDEX_TOOLS: return F("/tools");
+    case MENU_INDEX_SERIAL: return F("/serialmonitor");
+    case MENU_INDEX_FILES: return F("/file_manager");
   }
   return F("");
 }
@@ -140,6 +146,8 @@ bool GpMenuVisible(uint8_t index) {
     case MENU_INDEX_RULES: return MENU_INDEX_RULES_VISIBLE;
     case MENU_INDEX_NOTIFICATIONS: return MENU_INDEX_NOTIFICATIONS_VISIBLE;
     case MENU_INDEX_TOOLS: return MENU_INDEX_TOOLS_VISIBLE;
+    case MENU_INDEX_SERIAL: return true; // Always visible
+    case MENU_INDEX_FILES: return true;  // Always visible
   }
   return false;
 }
@@ -390,7 +398,7 @@ void WebTemplateParser::getWebPageTemplateVar(const String& varName)
       {
         addHtml(F("<div class='menubar'>"));
 
-        for (uint8_t i = 0; i < 8; i++)
+        for (uint8_t i = 0; i < 10; i++)
         {
           if (!GpMenuVisible(i)) {
             // hide menu item
